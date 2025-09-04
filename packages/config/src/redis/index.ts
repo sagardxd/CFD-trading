@@ -1,5 +1,4 @@
 import { createClient, type RedisClientType } from "redis";
-import { config } from "../env";
 
 class RedisClient {
     private client: RedisClientType;
@@ -21,6 +20,4 @@ class RedisClient {
     }
 }
 
-const createRedis = (url: string) => new RedisClient(config.REDIS_URL);
-
-export default createRedis;
+export const createRedis = (url: string) => new RedisClient(url);

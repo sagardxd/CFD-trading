@@ -1,3 +1,4 @@
-import {config} from "@repo/config";
+import { config, createRedis } from "@repo/config";
 
-console.log(config)
+const redis = createRedis(config.REDIS_URL);
+await redis.connect();
