@@ -1,6 +1,8 @@
 import {z} from 'zod'
 import dotenv from 'dotenv'
-dotenv.config({path: "../../.env"})
+import path from "path";
+
+dotenv.config({ path: path.resolve(__dirname, "../../../../.env") });
 
 const envSchema = z.object({
     REDIS_URL: z.string(),
@@ -15,3 +17,6 @@ export const config = {
     PORT_BACKEND: env.PORT_BACKEND,
     PORT_POLLER: env.PORT_POLLER
 }
+
+
+export default config
