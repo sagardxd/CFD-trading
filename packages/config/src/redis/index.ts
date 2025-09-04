@@ -15,6 +15,12 @@ class RedisClient {
         }
     }
 
+    async publish(channel: string, message: string) {
+        if (this.client.isOpen) {
+            await this.client.publish(channel, message);
+        }
+    }
+
     async disconnect() {
         if (this.client.isOpen) this.client.disconnect()
     }

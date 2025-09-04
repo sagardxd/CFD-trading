@@ -6,6 +6,11 @@
     "dev": "bun run --watch src/index.ts"
   },
   "private": true,
+  "dependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@repo/typescript-config": "workspace:*"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

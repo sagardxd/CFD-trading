@@ -37,6 +37,11 @@
     },
     "apps/poller": {
       "name": "poller",
+      "dependencies": {
+        "@repo/config": "workspace:*",
+        "@repo/types": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+      },
       "devDependencies": {
         "@types/bun": "latest",
       },
@@ -74,6 +79,15 @@
         "globals": "^16.3.0",
         "typescript": "^5.9.2",
         "typescript-eslint": "^8.40.0",
+      },
+    },
+    "packages/types": {
+      "name": "@repo/types",
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
       },
     },
     "packages/typescript-config": {
@@ -129,6 +143,8 @@
     "@repo/config": ["@repo/config@workspace:packages/config"],
 
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
+
+    "@repo/types": ["@repo/types@workspace:packages/types"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
 
