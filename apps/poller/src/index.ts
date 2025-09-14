@@ -1,4 +1,4 @@
-import type { AssetData, WSData } from '@repo/types';
+import { RedisStreamKeys, type AssetData, type WSData } from '@repo/types';
 import {createRedis, config} from '@repo/config'
 
 const main = async () => {
@@ -39,7 +39,8 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                await redisClient.publish("ASSETS", JSON.stringify(assets));
+                console.log(assets)
+                // await redisClient.xAdd(RedisStreamKeys.ASSET, assets);
             }
         } catch (err) {
             console.error("Error while publishing:", err);

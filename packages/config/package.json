@@ -16,6 +16,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@repo/types": "workspace:*",
     "@types/dotenv": "^8.2.3",
     "dotenv": "^17.2.2",
     "redis": "^5.8.2",
