@@ -1,4 +1,4 @@
-import { createTradeSchema, RedisStreamKeys, type ApiResponse, type createTradeResponse } from '@repo/types';
+import { createTradeSchema, RedisStreamKeys, type ApiResponse, type createTradeResponse, type getAllCloseTradeResponse, type getAllOpenTradeResponse } from '@repo/types';
 import type { Request, Response } from 'express';
 import { ApiResponseTimedOut, InvalidInputs, ServerError } from '../utils/api-response';
 import { logger } from '@repo/config';
@@ -65,28 +65,54 @@ export const closeTrade = async (req: Request, res: Response) => {
 }
 
 
-// export const getOpenTrades = async (req: Request, res: Response) => {
-//     try {
-//         const userId = req.user?.id;
+export const getOpenTrades = async (req: Request, res: Response<ApiResponse<getAllOpenTradeResponse>>) => {
+    try {
+        const userId = req.user!.id;
 
-//         const response = await TradeService.getOpenTrade(userId);
-//         return res.status(201).json(response)
-//     } catch (error: any) {
-//         const status = error.status || 500;
-//         const message = error.message || "Internal server error";
-//         return res.status(status).json({ message: message })
-//     }
-// }
+        const id = await engineReqStream.xAdd(RedisStreamKeys.ALL_OPEN_TRADE, { userId: userId });
+        if (id) {
+            const response = await engineResStream.xReadId(RedisStreamKeys.ALL_OPEN_TRADE, id);
+            if (!response) {
+                return ApiResponseTimedOut(res);
+            }
 
-// export const getCloseTrades = async (req: Request, res: Response) => {
-//     try {
-//         const userId = req.user!.id;
+            return res.status(200).json({
+                success: true,
+                data: {
+                    // TODO: yaha data lauta do sare open orders 
+                    orders: []
+                }
+            })
+        }
 
-//         const response = await TradeService.getCloseTrade(userId);
-//         return res.status(201).json(response)
-//     } catch (error: any) {
-//         const status = error.status || 500;
-//         const message = error.message || "Internal server error";
-//         return res.status(status).json({ message: message })
-//     }
-// }
+    } catch (error: any) {
+        logger.error('getOpenTrades', 'error getting all open trades in controller', error);
+        return ServerError(res);
+    }
+}
+
+export const getCloseTrades = async (req: Request, res: Response<ApiResponse<getAllCloseTradeResponse>>) => {
+    try {
+        const userId = req.user!.id;
+
+        const id = await engineReqStream.xAdd(RedisStreamKeys.ALL_OPEN_TRADE, { userId: userId });
+        if (id) {
+            const response = await engineResStream.xReadId(RedisStreamKeys.ALL_OPEN_TRADE, id);
+            if (!response) {
+                return ApiResponseTimedOut(res);
+            }
+
+            return res.status(200).json({
+                success: true,
+                data: {
+                    // TODO: yaha data lauta do sare open orders 
+                    orders: []
+                }
+            })
+        }
+
+    } catch (error: any) {
+        logger.error('getCloseTrades', 'error getting all close trades in controller', error);
+        return ServerError(res);
+    }
+}

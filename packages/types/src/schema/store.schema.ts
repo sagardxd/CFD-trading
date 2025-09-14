@@ -9,7 +9,7 @@ export type Balance = {
     usd_balance: number
 }
 
-export type OpenOrder = {
+export type OpenTrade = {
     id: Id
     userId: Id
     margin: number
@@ -20,7 +20,7 @@ export type OpenOrder = {
     opened_at: Date
 }
 
-export type CloseOrder = {
+export type CloseTrade = {
     id: Id
     userId: Id
     margin: number
