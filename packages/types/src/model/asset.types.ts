@@ -4,6 +4,11 @@ export enum Asset {
     SOL = "SOL"
 }
 
+export enum OrderType {
+    BUY = "BUY",
+    SELL = "SELL"
+}
+
 export interface AssetData {
     asset: Asset,
     price: number
