@@ -39,8 +39,7 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                console.log(assets)
-                // await redisClient.xAdd(RedisStreamKeys.ASSET, assets);
+                await redisClient.xAdd(RedisStreamKeys.ASSET, assets);
             }
         } catch (err) {
             console.error("Error while publishing:", err);

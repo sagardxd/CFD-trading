@@ -1,6 +1,5 @@
 import { createClient, type RedisClientType } from "redis";
-import { type RedisStreamKeys } from "@repo/types";
-import type { JsonObjectExpression } from "typescript";
+import { RedisStreamKeys } from "@repo/types";
 
 class RedisClient {
   private client: RedisClientType;
@@ -21,7 +20,27 @@ class RedisClient {
 
   async xAdd(channel: RedisStreamKeys, msg: Record<string, any>) {
     if (this.client.isOpen) {
-      await this.client.xAdd(channel, "*", { message: JSON.stringify(msg) });
+      const res2 = await this.client.xAdd(channel, "*", { message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 10 } });
+      console.log(res2);
+    }
+  }
+
+  async xReadAll(channel: RedisStreamKeys) {
+    if (this.client.isOpen) {
+      const result = await this.client.xRead(
+        {
+          key: channel,
+          id: "0-0",
+        }
+      );
+      if (result && result.length > 0) {
+        const data = result.find((data) => data.name === RedisStreamKeys.ASSET)
+        if (data) {
+          const messages = data.messages.map((data) => JSON.parse(data.message.message as string))
+          return messages;
+        }
+        return []
+      }
     }
   }
 
