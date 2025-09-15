@@ -21,3 +21,10 @@ export const ServerError = (res: Response<ApiResponse<any>>) => {
         message: "Server failed to answer!"
     })
 }
+
+export const ApiSuccessResponse = <T>(res: Response<ApiResponse<T>>, data: T, statusCode = 200) => {
+    return res.status(statusCode).json({
+        success: true,
+        data: data
+    })
+}

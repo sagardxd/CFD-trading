@@ -19,3 +19,12 @@ export interface WSData {
     price_updates: AssetData[]
 }
 
+export interface SupportedAssets {
+    assets: SupportedAsset[]
+}
+
+interface SupportedAsset {
+    symbol: string
+    name: string
+    imageUrl: string
+}
