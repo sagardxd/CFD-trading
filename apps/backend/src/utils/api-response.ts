@@ -22,9 +22,24 @@ export const ServerError = (res: Response<ApiResponse<any>>) => {
     })
 }
 
-export const ApiSuccessResponse = <T>(res: Response<ApiResponse<T>>, data: T, statusCode = 200) => {
+export const ApiSuccessResponse = <T>(res: Response<ApiResponse<T>>, data: T, message?: string, statusCode = 200) => {
     return res.status(statusCode).json({
         success: true,
-        data: data
+        data: data,
+        ...(message !== undefined && {message: message})
+    })
+}
+
+export const    CustomApiResponse = (res: Response<ApiResponse<null>>, statusCode: number, message: string) => {
+    return res.status(statusCode).json({
+        success: false,
+        message
+    })
+}
+
+export const QueueError = (res: Response<ApiResponse<any>>) => {
+    return res.status(500).json({
+        success: false,
+        message: "Server failed to answer!"
     })
 }

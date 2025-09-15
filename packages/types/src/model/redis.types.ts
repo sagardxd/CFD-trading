@@ -18,4 +18,5 @@ export enum EventType {
     ALL_OPEN_TRADE = 'trade:all_open',
     ALL_CLOSE_TRADE = 'trade:all_close',
     BALANCE_USD = 'balance:usd',
+    CREATE_USER = 'user:create',
 }
