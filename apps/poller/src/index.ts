@@ -1,4 +1,4 @@
-import { RedisStreamKeys, type AssetData, type WSData } from '@repo/types';
+import { EventType, GroupName, StreamName, type AssetData, type WSData } from '@repo/types';
 import {createRedis, config} from '@repo/config'
 
 const main = async () => {
@@ -9,6 +9,7 @@ const main = async () => {
 
     const redisClient = createRedis(config.REDIS_URL)
     await redisClient.connect();
+    await redisClient.createGroup(StreamName.EVENTS, GroupName.EVENTS_GROUP)
 
     const backpackWS = new WebSocket("wss://ws.backpack.exchange/");
     const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
@@ -39,7 +40,8 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                await redisClient.xAdd(RedisStreamKeys.ASSET, assets);
+                const id = await redisClient.xAdd(StreamName.ASSETS, EventType.ASSET, assets);
+                console.log(id)
             }
         } catch (err) {
             console.error("Error while publishing:", err);

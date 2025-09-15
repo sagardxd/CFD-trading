@@ -1,28 +1,31 @@
 import { type Request, type Response } from "express";
+import { InvalidInputs, ServerError } from "../utils/api-response";
+import { logger } from "@repo/config";
+import { userSchema } from "@repo/types";
+import { jwtSign } from "../utils/jwt";
 
 export const signUpController = async (req: Request, res: Response) => {
     try {
-        const { email } = req.body
-        const response = await AuthService.signupService(email);
-        if (response.status) {
-            return res.status(201).json({})
-        }
-        return res.status(500).json({})
+        const parsed = userSchema.safeParse(req.body);
+        if (!parsed.success) InvalidInputs(res, 'Invalid email!')
+
+        // const token = jwtSign()
+
+
     } catch (error) {
-        return res.status(500);
+        logger.error('signUpController', '', error);
+        return ServerError(res);
     }
 }
 
 export const signInController = async (req: Request, res: Response) => {
     try {
-        const { email } = req.body
-        const response = await AuthService.signinService(email);
-        if (response.success) {
-            return res.status(201).json({message: response.message})
-        }
-        return res.status(500).json({message: response.message})
+        const parsed = userSchema.safeParse(req.body);
+        if (!parsed.success) InvalidInputs(res, 'Invalid email!')
+
     } catch (error) {
-        return res.status(500);
+        logger.error('signInController', '', error);
+        return ServerError(res);
     }
 }
 
@@ -31,13 +34,10 @@ export const signInWithTokenController = async (req: Request, res: Response) => 
     try {
         if (!token) return res.status(403).json({ message: "not token provided" })
 
-        const response = await AuthService.signinWithTokenService(token)
-        if (!response.success) throw new Error
 
-        res.cookie("token", response.cookie)
-        res.status(200).json({message: "cookie set hogai"})
         return;
     } catch (error) {
-        return res.status(500).json({})
+        logger.error('signInWithTokenController', '', error);
+        return ServerError(res);
     }
 }

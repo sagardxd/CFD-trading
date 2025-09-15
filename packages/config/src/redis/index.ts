@@ -1,7 +1,7 @@
 import { createClient, type RedisClientType } from "redis";
-import { RedisStreamKeys, type xReadIdResponse } from "@repo/types";
 import { logger } from "../logger";
-import { forEachTrailingCommentRange, ModuleResolutionKind } from "typescript";
+import type { ConsumerName, EventType, GroupName, StreamName } from "@repo/types";
+import { generateHeapSnapshot } from "bun";
 
 class RedisClient {
   private client: RedisClientType;
@@ -24,42 +24,40 @@ class RedisClient {
     }
   }
 
-  async xAdd(channel: RedisStreamKeys, msg: Record<string, any>) {
+  async xAdd(streamName: StreamName, eventType: EventType, msg: Record<string, any>) {
     try {
       if (this.client.isOpen) {
-        const id = await this.client.xAdd(channel, "*", { message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 10 } });
+        const id = await this.client.xAdd(streamName, "*", { type: eventType, message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 1000 } });
         return id;
       }
     } catch (error) {
       logger.error('xAdd', 'Error adding to redis stream', error)
     }
   }
-
-  async xReadAll(channel: RedisStreamKeys) {
+  async getLatestValue(streamName: StreamName) {
     try {
-      if (this.client.isOpen) {
-        const result = await this.client.xRead(
-          {
-            key: channel,
-            id: "0-0",
-          }
-        );
-        if (result && result.length > 0) {
-          const data = result.find((data) => data.name === RedisStreamKeys.ASSET)
-          if (data) {
-            const messages = data.messages.map((data) => JSON.parse(data.message.message as string))
-            return messages;
-          }
-          return []
-        }
-      }
-    } catch (error) {
-      logger.error('xReadAll', 'Error in xReadll', error)
+      if (!this.client.isOpen) return null;
 
+      const result = await this.client.xRevRange(streamName, '+', '-', { COUNT: 1 });
+
+      if (!result || result.length === 0) return null;
+
+      const latest = result[0]; // result[0] is an object
+      if (!latest) return null;
+
+      return {
+        id: latest.id,
+        type: latest.message.type,
+        payload: JSON.parse(latest.message.message as string)
+      };
+    } catch (error) {
+      logger.error('getLatestValue', 'Error getting latest value of redis stream', error);
+      return null;
     }
   }
 
-  async xReadId(channel: RedisStreamKeys, id: string) {
+
+  async xReadId(streamName: StreamName, id: string) {
     const startTime = Date.now();
     const timeOut = 10000;
     const interval = 50;
@@ -67,7 +65,7 @@ class RedisClient {
     while (Date.now() - startTime < timeOut) {
       try {
         const result = await this.client.xRead({
-          key: channel,
+          key: streamName,
           id: id
         });
 
@@ -79,6 +77,55 @@ class RedisClient {
       await new Promise(resolve => setTimeout(resolve, interval))
     }
     return null;
+  }
+
+  async createGroup(streamName: string, groupName: string) {
+    try {
+      if (this.client.isOpen) {
+        await this.client.xGroupCreate(streamName, groupName, '$', { MKSTREAM: true })
+        logger.info(`Created Group ${groupName} on stream ${streamName}`)
+
+      }
+    } catch (error) {
+      logger.error('createGroup', 'error creating group', error)
+
+    }
+  }
+
+  async readGroup(streamName: StreamName, groupName: GroupName, consumerName: ConsumerName, block = 0) {
+    try {
+      if (this.client.isOpen) {
+        const result = await this.client.xReadGroup(
+          groupName,
+          consumerName,
+          [{ key: streamName, id: '>' }],
+          { BLOCK: block }
+        )
+
+        if (!result) return null;
+
+        const stream = result.find((stream) => stream.name === streamName);
+        const messages = stream?.messages.map((msg) => ({
+          id: msg.id,
+          type: msg.message.type,
+          payload: JSON.parse(msg.message.message as string) // parse the JSON string
+        }));
+
+        return messages;
+      }
+      return null;
+    } catch (error) {
+      logger.error('readGroup', 'error reading group', error)
+    }
+  }
+
+  async acknowledge(streamName: StreamName, groupName: GroupName, messageId: string) {
+    try {
+      await this.client.xAck(streamName, groupName, messageId);
+      logger.info(`Acknowledged message ${messageId}`);
+    } catch (error) {
+      logger.error('acknowledge', 'Error acknowledging message', error);
+    }
   }
 
 

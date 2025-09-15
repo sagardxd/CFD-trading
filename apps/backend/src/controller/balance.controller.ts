@@ -1,4 +1,4 @@
-import { RedisStreamKeys, type ApiResponse } from "@repo/types";
+import { EventType, StreamName, type ApiResponse } from "@repo/types";
 import type { Request, Response } from "express";
 import { engineReqStream, engineResStream } from "..";
 import { ApiResponseTimedOut, ServerError } from "../utils/api-response";
@@ -8,9 +8,9 @@ export const getUSDBalance = async (req: Request, res: Response<ApiResponse<any>
     try {
         const userId = req.user!.id;
 
-        const id = await engineReqStream.xAdd(RedisStreamKeys.ALL_OPEN_TRADE, { userId: userId });
+        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.BALANCE_USD, { userId: userId });
         if (id) {
-            const response = await engineResStream.xReadId(RedisStreamKeys.ALL_OPEN_TRADE, id);
+            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
             if (!response) {
                 return ApiResponseTimedOut(res);
             }

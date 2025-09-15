@@ -22,7 +22,7 @@ Promise.all([
     engineResStream.connect(),
 ]).then(() => {
     app.listen(config.PORT_BACKEND, () => {
-        console.log('Poller running on port: ', config.PORT_POLLER)
+       logger.info(`Poller running on port: ${config.PORT_POLLER}`)
     })
 }).catch((error) => {
     logger.error('Stream connecting error', '')

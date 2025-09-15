@@ -1,4 +1,4 @@
-import { createTradeSchema, RedisStreamKeys, type ApiResponse, type createTradeResponse, type getAllCloseTradeResponse, type getAllOpenTradeResponse } from '@repo/types';
+import { createTradeSchema, EventType, StreamName, type ApiResponse, type createTradeResponse, type getAllCloseTradeResponse, type getAllOpenTradeResponse } from '@repo/types';
 import type { Request, Response } from 'express';
 import { ApiResponseTimedOut, InvalidInputs, ServerError } from '../utils/api-response';
 import { logger } from '@repo/config';
@@ -13,9 +13,9 @@ export const createTrade = async (req: Request, res: Response<ApiResponse<create
             return InvalidInputs(res);
         }
 
-        const id = await engineReqStream.xAdd(RedisStreamKeys.OPEN_TRADE, { userId: userId, ...parsedData.data });
+        const id = await engineReqStream.xAdd(StreamName.EVENTS ,EventType.OPEN_TRADE, { userId: userId, ...parsedData.data });
         if (id) {
-            const response = await engineResStream.xReadId(RedisStreamKeys.OPEN_TRADE, id);
+            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
             if (!response) {
                 return ApiResponseTimedOut(res);
             }
@@ -42,9 +42,9 @@ export const closeTrade = async (req: Request, res: Response) => {
 
         if (!tradeId) return InvalidInputs(res, "Trade Id is required");
 
-        const id = await engineReqStream.xAdd(RedisStreamKeys.CLOSE_TRADE, { userId: userId, tradeId });
+        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.CLOSE_TRADE, { userId: userId, tradeId });
         if (id) {
-            const response = await engineResStream.xReadId(RedisStreamKeys.CLOSE_TRADE, id);
+            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
             if (!response) {
                 return ApiResponseTimedOut(res);
             }
@@ -69,9 +69,9 @@ export const getOpenTrades = async (req: Request, res: Response<ApiResponse<getA
     try {
         const userId = req.user!.id;
 
-        const id = await engineReqStream.xAdd(RedisStreamKeys.ALL_OPEN_TRADE, { userId: userId });
+        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.ALL_OPEN_TRADE, { userId: userId });
         if (id) {
-            const response = await engineResStream.xReadId(RedisStreamKeys.ALL_OPEN_TRADE, id);
+            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
             if (!response) {
                 return ApiResponseTimedOut(res);
             }
@@ -95,9 +95,9 @@ export const getCloseTrades = async (req: Request, res: Response<ApiResponse<get
     try {
         const userId = req.user!.id;
 
-        const id = await engineReqStream.xAdd(RedisStreamKeys.ALL_OPEN_TRADE, { userId: userId });
+        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.ALL_OPEN_TRADE, { userId: userId });
         if (id) {
-            const response = await engineResStream.xReadId(RedisStreamKeys.ALL_OPEN_TRADE, id);
+            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
             if (!response) {
                 return ApiResponseTimedOut(res);
             }

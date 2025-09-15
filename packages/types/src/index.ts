@@ -6,3 +6,4 @@ export * from './model/api.types'
 
 export * from './schema/store.schema'
 export * from './schema/trade.schema'
+export * from './schema/user.schema'
