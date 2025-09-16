@@ -1,7 +1,7 @@
-import type { ApiResponse } from "@repo/types";
+import type { ApiResponse, EngineResponse } from "@repo/types";
 import type { Response } from "express";
 
-export const InvalidInputs = (res: Response<ApiResponse<any>>, message? : string) => {
+export const InvalidInputs = (res: Response<ApiResponse<any>>, message?: string) => {
     return res.status(411).json({
         success: false,
         message: message ? message : "Invalid Inputs"
@@ -26,11 +26,11 @@ export const ApiSuccessResponse = <T>(res: Response<ApiResponse<T>>, data: T, me
     return res.status(statusCode).json({
         success: true,
         data: data,
-        ...(message !== undefined && {message: message})
+        ...(message !== undefined && { message: message })
     })
 }
 
-export const    CustomApiResponse = (res: Response<ApiResponse<null>>, statusCode: number, message: string) => {
+export const CustomApiResponse = (res: Response<ApiResponse<null>>, message: string, statusCode = 500,) => {
     return res.status(statusCode).json({
         success: false,
         message
@@ -42,4 +42,11 @@ export const QueueError = (res: Response<ApiResponse<any>>) => {
         success: false,
         message: "Server failed to answer!"
     })
+}
+
+export const EngineApiResponse = (res: Response<ApiResponse<any>>, data: EngineResponse<any>) => {
+    if (data.payload.success) {
+        return ApiSuccessResponse(res, data.payload.data);
+    }
+    return CustomApiResponse(res, data.payload.message!);
 }

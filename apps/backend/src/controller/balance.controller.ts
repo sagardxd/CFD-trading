@@ -1,26 +1,20 @@
-import { EventType, StreamName, type ApiResponse } from "@repo/types";
+import { ConsumerName, EventType, GroupName, StreamName, type ApiResponse, type GetUSDBalanceResponse } from "@repo/types";
 import type { Request, Response } from "express";
-import { engineReqStream, engineResStream } from "..";
-import { ApiResponseTimedOut, ServerError } from "../utils/api-response";
+import { ApiResponseTimedOut, EngineApiResponse, ServerError } from "../utils/api-response";
 import { logger } from "@repo/config";
+import { engineReqStream, engineResStream } from "../redis/redis-setup";
 
 export const getUSDBalance = async (req: Request, res: Response<ApiResponse<any>>) => {
     try {
         const userId = req.user!.id;
 
         const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.BALANCE_USD, { userId: userId });
-        if (id) {
-            const response = await engineResStream.xReadId(StreamName.EVENTS, id);
-            if (!response) {
-                return ApiResponseTimedOut(res);
-            }
-            // TODO: data lelena engine response se
-            return res.status(200).json({
-                success: true,
-                data: null
-            })
-        }
+        if (!id) return ServerError(res);
 
+        const response = await engineResStream.readGroupWithMesageId<GetUSDBalanceResponse>(StreamName.ENGINE_RES, GroupName.ENGINE_RES_GROUP, ConsumerName.ENGINE_RES_CONSUMER, id);
+        if (!response) return ApiResponseTimedOut(res);
+
+        return EngineApiResponse(res, response)
     } catch (error: any) {
         logger.error('getCloseTrades', 'error getting all close trades in controller', error);
         return ServerError(res);

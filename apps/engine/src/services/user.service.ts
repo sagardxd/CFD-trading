@@ -1,6 +1,7 @@
 import { logger } from "@repo/config"
-import type { CreateUserPayload, GetUSDBalancePayload } from "@repo/types"
+import { type CreateUserPayload, type GetUSDBalancePayload, type GetUSDBalanceResponse } from "@repo/types"
 import { Balances } from "../store/engine.store"
+import { engineErrorRes, engineSuccessRes } from "../utils/send-engine-response";
 
 export const createUser = (data: CreateUserPayload) => {
     try {
@@ -11,11 +12,12 @@ export const createUser = (data: CreateUserPayload) => {
     }
 }
 
-export const getUserBalance = (data: GetUSDBalancePayload) => {
+export const getUserUSDBalance = (input: GetUSDBalancePayload) => {
     try {
-        const balance = Balances.get(data.payload.userId)?.usd;
-        console.log(balance)
-        
+        const balance = Balances.get(input.payload.userId)?.usd;
+        if (!balance) return engineErrorRes(input.id, 'User not found')
+
+        return engineSuccessRes<GetUSDBalanceResponse>(input.id, { usd: balance })
     } catch (error) {
         logger.error("getUserBalance", "error getting user balance in engine", error);
     }

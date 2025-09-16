@@ -7,4 +7,6 @@ export type EngineUser = {
 export type CreateUserPayload = EngineRequest<EngineUser>;
 export type GetUSDBalancePayload = EngineRequest<EngineUser>;
 
-
+export type GetUSDBalanceResponse = {
+    usd: number 
+}

@@ -1,4 +1,4 @@
-import { config, createRedis, logger } from "@repo/config";
+import { config, logger } from "@repo/config";
 import express from 'express'
 import AuthRouter from '../src/routes/auth.route'
 import tradesRouter from '../src/routes/trades.route'
@@ -7,9 +7,8 @@ import supportedAssetRouter from '../src/routes/supported-asset.route'
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { ApiSuccessResponse } from "./utils/api-response";
 import cookieParser from "cookie-parser";
+import { RedisInit } from "./redis/redis-setup";
 
-export const engineReqStream = createRedis(config.REDIS_URL);
-export const engineResStream = createRedis(config.REDIS_URL);
 
 const app = express();
 app.use(express.json());
@@ -24,13 +23,10 @@ app.use("/api/v1/trade", AuthMiddleware, tradesRouter)
 app.use("/api/v1/balance", AuthMiddleware, balanceRouter)
 app.use("/api/v1/supportedAssets", supportedAssetRouter)
 
-Promise.all([
-    engineReqStream.connect(),
-    engineResStream.connect(),
-]).then(() => {
+RedisInit().then(() => {
     app.listen(config.PORT_BACKEND, () => {
-       logger.info(`Backend running on port: ${config.PORT_BACKEND}`)
+        logger.info(`Backend running on port: ${config.PORT_BACKEND}`)
     })
 }).catch((error) => {
-    logger.error('Stream connecting error', '')
+    logger.error('Stream connecting error', '', error)
 }) 

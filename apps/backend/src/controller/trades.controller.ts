@@ -2,7 +2,7 @@ import { createTradeSchema, EventType, StreamName, type ApiResponse, type create
 import type { Request, Response } from 'express';
 import { ApiResponseTimedOut, InvalidInputs, ServerError } from '../utils/api-response';
 import { logger } from '@repo/config';
-import { engineReqStream, engineResStream } from '..';
+import { engineReqStream, engineResStream } from '../redis/redis-setup';
 
 export const createTrade = async (req: Request, res: Response<ApiResponse<createTradeResponse>>) => {
     try {

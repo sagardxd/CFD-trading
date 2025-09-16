@@ -1,6 +1,6 @@
 import { createClient, type RedisClientType } from "redis";
 import { logger } from "../logger";
-import type { ConsumerName, EventType, GroupName, LatestAssetPayload, StreamName } from "@repo/types";
+import type { ConsumerName, EngineResponse, EventType, GroupName, LatestAssetPayload, Payload, StreamName } from "@repo/types";
 
 class RedisClient {
   private client: RedisClientType;
@@ -33,6 +33,18 @@ class RedisClient {
       logger.error('xAdd', 'Error adding to redis stream', error)
     }
   }
+
+  async xAddWithId<T>(streamName: StreamName, requestId: string, msg: Payload<T>) {
+    try {
+      if (this.client.isOpen) {
+        const id = await this.client.xAdd(streamName, "*", {requestId, message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 1000 } });
+        return id;
+      }
+    } catch (error) {
+      logger.error('xAddWithId', 'Error adding with id to redis stream', error)
+    }
+  }
+
   async getLatestValue(streamName: StreamName): Promise<LatestAssetPayload | null> {
     try {
       if (!this.client.isOpen) return null;
@@ -54,7 +66,6 @@ class RedisClient {
       return null;
     }
   }
-
 
   async xReadId(streamName: StreamName, id: string) {
     const startTime = Date.now();
@@ -87,7 +98,6 @@ class RedisClient {
       }
     } catch (error) {
       logger.error('createGroup', 'error creating group', error)
-
     }
   }
 
@@ -120,6 +130,56 @@ class RedisClient {
       logger.error('readGroup', 'error reading group', error)
     }
   }
+
+  async readGroupWithMesageId<T>(streamName: StreamName, groupName: GroupName, consumerName: ConsumerName, requestId: string, block = 100 // block 100ms per attempt
+  ): Promise<EngineResponse<T> | null> {
+    const startTime = Date.now();
+    const timeOut = 3000;
+
+    while (Date.now() - startTime < timeOut) {
+      try {
+        if (this.client.isOpen) {
+          const result = await this.client.xReadGroup(
+            groupName,
+            consumerName,
+            [{ key: streamName, id: ">" }],
+            { BLOCK: block }
+          );
+
+          if (!result) continue;
+
+          const stream = result.find((s) => s.name === streamName);
+          const messages = stream?.messages.map((msg: any) => ({
+            id: msg.id,
+            requestId: msg.message.requestId,
+            payload: JSON.parse(msg.message.message as string),
+          }));
+
+          if (messages && messages.length > 0) {
+            const match = messages.find((m) => m.requestId === requestId);
+
+            if (match) {
+              // Ack only the matching one
+              await this.acknowledge(streamName, groupName, match.id);
+              return match;
+            }
+
+            // For non-matching ones → don’t ack, just leave them pending
+          }
+        }
+      } catch (error) {
+        logger.error(
+          "readGroupWithMesageId",
+          "error reading group",
+          error
+        );
+      }
+    }
+
+    // Timed out
+    return null;
+  }
+
 
   async acknowledge(streamName: StreamName, groupName: GroupName, messageId: string) {
     try {

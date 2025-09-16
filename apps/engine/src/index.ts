@@ -1,5 +1,5 @@
 import { ConsumerName, EventType, GroupName, StreamName, type CloseTradePayload, type CreateTradePayload, type CreateUserPayload, type GetAllOpenTradesPayload, type GetUSDBalancePayload } from "@repo/types";
-import { createUser, getUserBalance } from "./services/user.service";
+import { createUser, getUserUSDBalance } from "./services/user.service";
 import { engineReqStream, engineResStream } from "./redis/redis";
 import { closeTrade, createTrade, getAllOpenTrades } from "./services/trade.service";
 
@@ -14,7 +14,7 @@ const main = async () => {
         console.log("result h ", result);
         if (result.type === EventType.CREATE_USER) createUser(result as CreateUserPayload);
         
-        else if (result.type === EventType.BALANCE_USD) getUserBalance(result as GetUSDBalancePayload);
+        else if (result.type === EventType.BALANCE_USD) getUserUSDBalance(result as GetUSDBalancePayload);
 
         else if (result.type === EventType.OPEN_TRADE) createTrade(result as CreateTradePayload)
 

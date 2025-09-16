@@ -1,14 +1,17 @@
 export enum StreamName {
     EVENTS = 'events',
     ASSETS = 'asset',
+    ENGINE_RES = 'engine-res'
 }
 
 export enum GroupName {
     EVENTS_GROUP = 'events:group',
+    ENGINE_RES_GROUP = 'engine-res:group'
 }
 
 export enum ConsumerName {
-    EVENT_CONSUMER = 'events:consumer'
+    EVENT_CONSUMER = 'events:consumer',
+    ENGINE_RES_CONSUMER = 'engine-res:consumer'
 }
 
 export enum EventType {

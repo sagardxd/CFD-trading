@@ -3,9 +3,8 @@ import { ApiSuccessResponse, CustomApiResponse, InvalidInputs, QueueError, Serve
 import { logger } from "@repo/config";
 import { EventType, StreamName, userSchema } from "@repo/types";
 import { CreateUser, UserExists } from "../services/user.service";
-import { engineReqStream, engineResStream } from "..";
-import { sendEmail } from "../services/mail.service";
 import { jwtSign, jwtVerify } from "../utils/jwt";
+import { engineReqStream, engineResStream } from "../redis/redis-setup";
 
 export const signUpController = async (req: Request, res: Response) => {
     try {
