@@ -20,7 +20,7 @@ export const getUserUSDBalance = (input: GetUSDBalancePayload) => {
         if (!balance) return engineErrorRes(input.id, 'User not found')
 
         return engineSuccessRes<GetUSDBalanceResponse>(input.id, { usd: balance })
-    } catch (error) {
+    } catch (error) {   
         logger.error("getUserBalance", "error getting user balance in engine", error);
     }
 }

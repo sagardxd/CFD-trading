@@ -1,17 +1,18 @@
 import { logger, Response } from "@repo/config"
-import { OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CreateTradePayload, type GetAllOpenTradesPayload, type OpenTrade, type OpenTradeResponse } from "@repo/types"
+import { OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse } from "@repo/types"
 import { engineReqStream } from "../redis/redis"
 import { generateId } from "../utils/generate-id"
 import { MARGIN_DECIMAL } from "../constants/decimal.constants"
 import { Balances, CloseTrades, OpenTrades } from "../store/engine.store"
+import { engineErrorRes, engineSuccessRes } from "../utils/send-engine-response"
 
 export const createTrade = async (input: CreateTradePayload) => {
     try {
         const userBalance = Balances.get(input.payload.userId)?.usd;
-        if (!userBalance) return logger.info("user balance nhi h boss")
+        if (!userBalance) return engineErrorRes(input.id, 'User not found')
 
 
-        if ((userBalance - input.payload.margin) < 0) return Response.error("Not enough Balance!");
+        if ((userBalance - input.payload.margin) < 0) return engineErrorRes(input.id, 'Not enough balance!')
 
         // remove the margin from balance
         Balances.set(input.payload.userId, { usd: userBalance - input.payload.margin });
@@ -19,10 +20,9 @@ export const createTrade = async (input: CreateTradePayload) => {
 
         const assetPrices = await engineReqStream.getLatestValue(StreamName.ASSETS);
         const asset = assetPrices?.payload.price_updates.find((asset) => asset.asset === input.payload.asset);
-        if (!asset) return Response.error("asset not found!");
+        if (!asset) return engineErrorRes(input.id, 'Asset not found')
 
         const orderId = generateId();
-        console.log(asset);
 
         const buyPrice = asset.price / Math.pow(10, asset.decimal);
         const sellPrice = buyPrice - 10;
@@ -48,14 +48,13 @@ export const createTrade = async (input: CreateTradePayload) => {
         userOpenTrades.push(order);
         OpenTrades.set(input.payload.userId, userOpenTrades);
 
-        console.log("userOpenTrades", userOpenTrades);
+        console.log('trade created', order.id);
 
-        return Response.success({
-            orderId
-        })
+        return engineSuccessRes<CreateTradeResponse>(input.id, { orderId: order.id })
 
     } catch (error) {
         logger.error("createTrade", "error creating trade in engine")
+        return engineErrorRes(input.id, 'Server error')
     }
 
 }
@@ -66,16 +65,14 @@ export const closeTrade = async (input: CloseTradePayload) => {
         const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
         const orderIndex = userOpenTrades.findIndex(order => order.id === input.payload.orderId);
 
-        if (orderIndex === -1) {
-            return Response.error("Order not found");
-        }
+        if (orderIndex === -1) return engineErrorRes(input.id, 'Order not found!')
 
         const order = userOpenTrades[orderIndex]!;
 
         // current price of asset
         const assetPrices = await engineReqStream.getLatestValue(StreamName.ASSETS);
         const asset = assetPrices?.payload.price_updates.find((asset) => asset.asset === order.asset);
-        if (!asset) return Response.error("asset not found!");
+        if (!asset) return engineErrorRes(input.id, 'Asset not found!')
 
         const buyPrice = asset.price / Math.pow(10, asset.decimal);
         const sellPrice = buyPrice - 10;
@@ -116,11 +113,10 @@ export const closeTrade = async (input: CloseTradePayload) => {
         userClosedTrades.push(closedTrade);
         CloseTrades.set(input.payload.userId, userClosedTrades);
 
-        return Response.success({
-            orderId: closedTrade.id
-        })
+        return engineSuccessRes<CloseTradeResponse>(input.id, { orderId: order.id })
     } catch (error) {
         logger.error("closeTrade", "error closing trade in engine", error)
+        return engineErrorRes(input.id, 'Server error')
     }
 }
 
@@ -142,11 +138,7 @@ export const getAllOpenTrades = (input: GetAllOpenTradesPayload) => {
             }))
         }
 
-        console.log('open trades', cleanedData);
-
-        return {
-            trades: cleanedData,
-        }
+        return engineSuccessRes<GetAllOpenTradesResponse>(input.id, { trades: cleanedData })
     } catch (error) {
         logger.error("getAllOpenTrades", "error getting all open trades in engine", error)
 

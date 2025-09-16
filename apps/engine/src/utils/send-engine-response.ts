@@ -5,18 +5,18 @@ export const engineSuccessRes = async <T>(
     requestId: string,
     data?: T,
 ) => {
-    await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENTS_GROUP, requestId);
+    // await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENTS_GROUP, requestId);
     return engineResStream.xAddWithId<T>(StreamName.ENGINE_RES, requestId, {
         success: true,
         ...(data ? { data } : {}),
     });
 }
-export const engineErrorRes = <T>(
+export const engineErrorRes = (
     requestId: string,
-    data?: T,
+    message?: string,
 ) => {
-    return engineResStream.xAddWithId<T>(StreamName.ENGINE_RES, requestId, {
+    return engineResStream.xAddWithId(StreamName.ENGINE_RES, requestId, {
         success: false,
-        ...(data ? { data } : {}),
+        ...(message ? { message } : {}),
     });
 }

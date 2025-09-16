@@ -31,3 +31,18 @@ export const CreateUser = async (email: string) => {
         return null;
     }
 }
+
+export const UpdateLastloggedIn = async (userId: string) => {
+    try {
+        await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                lastLoggedIn: new Date()
+            }
+        })
+    } catch (error) {
+        logger.error("UpdateLastloggedIn", "Error updating the last logged in of user!", error)
+    }
+}

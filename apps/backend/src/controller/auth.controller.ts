@@ -2,7 +2,7 @@ import { type Request, type Response } from "express";
 import { ApiResponseTimedOut, ApiSuccessResponse, CustomApiResponse, EngineApiResponse, InvalidInputs, QueueError, ServerError } from "../utils/api-response";
 import { logger } from "@repo/config";
 import { EventType, userSchema } from "@repo/types";
-import { CreateUser, UserExists } from "../services/user.service";
+import { CreateUser, UpdateLastloggedIn, UserExists } from "../services/user.service";
 import { jwtSign, jwtVerify } from "../utils/jwt";
 import { sendEmail } from "../services/mail.service";
 import { enginerRequest, enginerResponse } from "../utils/engine-helper";
@@ -45,9 +45,10 @@ export const signInController = async (req: Request, res: Response) => {
         if (!alreadyUser) return CustomApiResponse(res, 'User not found!', 404);
 
         const token = jwtSign({ email: parsed.data.email, id: alreadyUser.id }, "5m")
+        console.log(token);
         await sendEmail(parsed.data.email, token);
 
-        return ApiSuccessResponse(res, {id: alreadyUser.id});
+        return ApiSuccessResponse(res, null);
     } catch (error) {
         logger.error('signInController', '', error);
         return ServerError(res);
@@ -61,6 +62,7 @@ export const signInWithTokenController = async (req: Request, res: Response) => 
 
         const decodedUser = jwtVerify(token);
         const newToken = jwtSign({ email: decodedUser.email, id: decodedUser.id }, '7d');
+        await UpdateLastloggedIn(decodedUser.id)
 
         res.cookie('token', newToken);
 

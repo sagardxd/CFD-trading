@@ -14,6 +14,8 @@ export const getUSDBalance = async (req: Request, res: Response<ApiResponse<any>
         const response = await enginerResponse<GetUSDBalanceResponse>(id);
         if (!response) return ApiResponseTimedOut(res);
 
+        console.log('response', response);
+
         return EngineApiResponse(res, response);
     } catch (error: any) {
         logger.error('getCloseTrades', 'error getting all close trades in controller', error);

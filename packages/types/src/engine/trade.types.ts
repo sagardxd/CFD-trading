@@ -19,3 +19,13 @@ export interface OpenTradeResponse {
     openTime: Date
 }
 
+export type CreateTradeResponse = {
+    orderId: string
+}
+
+export type CloseTradeResponse = CreateTradeResponse;
+
+export type GetAllOpenTradesResponse = {
+    trades: OpenTradeResponse[]
+}
+

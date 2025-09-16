@@ -10,7 +10,3 @@ export type GetUSDBalancePayload = EngineRequest<EngineUser>;
 export type GetUSDBalanceResponse = {
     usd: number 
 }
-
-// export type UserSignupResponse = {
-//     id: string
-// }
