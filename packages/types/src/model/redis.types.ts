@@ -1,19 +1,22 @@
 export enum StreamName {
     EVENTS = 'events',
     ASSETS = 'asset',
-    ENGINE_RES = 'engine-res'
+    ENGINE_RES = 'engine-res',
+    DATABASE = 'database'
 }
 
 export enum GroupName {
     EVENT_GROUP = 'event:group',
     ASSET_GROUP = 'asset:group',
-    ENGINE_RES_GROUP = 'engine-res:group'
+    ENGINE_RES_GROUP = 'engine-res:group',
+    DATABASE_GROUP = 'database:group'
 }
 
 export enum ConsumerName {
     EVENT_CONSUMER = 'event:consumer',
     ASSET_CONSUMER = 'asset:consumer',
-    ENGINE_RES_CONSUMER = 'engine-res:consumer'
+    ENGINE_RES_CONSUMER = 'engine-res:consumer',
+    DATABASE_CONSUMER = 'database:consumer'
 }
 
 export enum EventType {

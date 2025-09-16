@@ -1,6 +1,6 @@
 import { logger, Response } from "@repo/config"
-import { OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse } from "@repo/types"
-import { engineReqStream } from "../redis/redis"
+import { EventType, OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse } from "@repo/types"
+import { engineReqStream, engineResStream } from "../redis/redis"
 import { generateId } from "../utils/generate-id"
 import { MARGIN_DECIMAL } from "../constants/decimal.constants"
 import { Balances, CloseTrades, OpenTrades } from "../store/engine.store"
@@ -112,6 +112,9 @@ export const closeTrade = async (input: CloseTradePayload) => {
         const userClosedTrades = CloseTrades.get(input.payload.userId) || [];
         userClosedTrades.push(closedTrade);
         CloseTrades.set(input.payload.userId, userClosedTrades);
+
+        // entry in db
+        engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, {order: closedTrade});
 
         return engineSuccessRes<CloseTradeResponse>(input.id, { orderId: order.id })
     } catch (error) {

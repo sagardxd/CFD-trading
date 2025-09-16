@@ -1,0 +1,21 @@
+{
+  "name": "storage",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "private": true,
+  "dependencies": {
+    "@repo/types": "workspace:*",
+    "@repo/config": "workspace:*",
+    "@repo/db": "workspace:*"
+  },
+  "devDependencies": {  
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
