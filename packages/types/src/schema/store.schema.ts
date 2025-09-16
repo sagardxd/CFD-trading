@@ -1,17 +1,20 @@
+import type { Asset, OrderType } from "../model/asset.types"
+
 export type Id = string
 
 export type User = {
-    id: string
-    email: string
+    id: Id
 }
 
 export type Balance = {
-    usd_balance: number
+    usd: number
 }
 
 export type OpenTrade = {
     id: Id
     userId: Id
+    type: OrderType
+    asset: Asset
     margin: number
     leverage: number
     quantity: number
@@ -23,6 +26,8 @@ export type OpenTrade = {
 export type CloseTrade = {
     id: Id
     userId: Id
+    type: OrderType
+    asset: Asset
     margin: number
     leverage: number
     quantity: number

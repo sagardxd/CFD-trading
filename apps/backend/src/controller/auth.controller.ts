@@ -15,13 +15,16 @@ export const signUpController = async (req: Request, res: Response) => {
         const alreadyUser = await UserExists(parsed.data.email);
         if (alreadyUser) return CustomApiResponse(res, 409, 'User already exists!');
 
-        const user = await CreateUser(parsed.data.email);
-        if (!user) return ServerError(res);
+        // const user = await CreateUser(parsed.data.email);
+        // if (!user) return ServerError(res);  
 
-        const token = jwtSign({ email: parsed.data.email, id: user.id }, "5m")
-        await sendEmail(parsed.data.email, token);
+        // const token = jwtSign({ email: parsed.data.email, id: user.id }, "5m")
+        const token = jwtSign({ email: parsed.data.email, id: 1}, "5m")
+        // await sendEmail(parsed.data.email, token);
+        console.log('token', token);
 
-        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.CREATE_USER, { userId: user.id })
+        const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.CREATE_USER, { userId: 1})
+        // const id = await engineReqStream.xAdd(StreamName.EVENTS, EventType.CREATE_USER, { userId: user.id })
         if (!id) return QueueError(res);
 
         const response = await engineResStream.xReadId(StreamName.EVENTS, id);

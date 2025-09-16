@@ -10,3 +10,4 @@ export const createTradeSchema = z.object({
     take_profit: z.number().optional()
 })
 
+export type CreateTradeInput = z.infer<typeof createTradeSchema>

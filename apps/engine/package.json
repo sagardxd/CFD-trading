@@ -4,8 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun run --watch src/index.ts"
-},
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -15,7 +16,7 @@
   "dependencies": {
     "@repo/config": "workspace:*",
     "@repo/types": "workspace:*",
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "uuid": "^13.0.0"
   }
-  
 }

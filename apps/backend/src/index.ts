@@ -6,12 +6,14 @@ import balanceRouter from '../src/routes/balance.route'
 import supportedAssetRouter from '../src/routes/supported-asset.route'
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { ApiSuccessResponse } from "./utils/api-response";
+import cookieParser from "cookie-parser";
 
 export const engineReqStream = createRedis(config.REDIS_URL);
 export const engineResStream = createRedis(config.REDIS_URL);
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     return ApiSuccessResponse(res, "Backend is up");

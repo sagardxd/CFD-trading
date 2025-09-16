@@ -1,7 +1,6 @@
 import { createClient, type RedisClientType } from "redis";
 import { logger } from "../logger";
-import type { ConsumerName, EventType, GroupName, StreamName } from "@repo/types";
-import { generateHeapSnapshot } from "bun";
+import type { ConsumerName, EventType, GroupName, LatestAssetPayload, StreamName } from "@repo/types";
 
 class RedisClient {
   private client: RedisClientType;
@@ -34,7 +33,7 @@ class RedisClient {
       logger.error('xAdd', 'Error adding to redis stream', error)
     }
   }
-  async getLatestValue(streamName: StreamName) {
+  async getLatestValue(streamName: StreamName): Promise<LatestAssetPayload | null> {
     try {
       if (!this.client.isOpen) return null;
 
@@ -47,7 +46,7 @@ class RedisClient {
 
       return {
         id: latest.id,
-        type: latest.message.type,
+        type: latest.message.type as EventType,
         payload: JSON.parse(latest.message.message as string)
       };
     } catch (error) {
@@ -59,8 +58,8 @@ class RedisClient {
 
   async xReadId(streamName: StreamName, id: string) {
     const startTime = Date.now();
-    const timeOut = 10000;
-    const interval = 50;
+    const timeOut = 3000;
+    const interval = 1000;
 
     while (Date.now() - startTime < timeOut) {
       try {
@@ -69,7 +68,7 @@ class RedisClient {
           id: id
         });
 
-        return result;
+        if (result) return result;
       } catch (error) {
         logger.error('xResponseOfId', 'Error getting the reponse of the Id in xRead', error)
       }
@@ -111,7 +110,10 @@ class RedisClient {
           payload: JSON.parse(msg.message.message as string) // parse the JSON string
         }));
 
-        return messages;
+        if (messages && messages.length > 0) {
+          return messages[0];
+        }
+
       }
       return null;
     } catch (error) {
