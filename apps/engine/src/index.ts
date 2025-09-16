@@ -1,7 +1,7 @@
-import { ConsumerName, EventType, GroupName, StreamName, type CreateTradePayload, type CreateUserPayload, type GetUSDBalancePayload } from "@repo/types";
+import { ConsumerName, EventType, GroupName, StreamName, type CloseTradePayload, type CreateTradePayload, type CreateUserPayload, type GetAllOpenTradesPayload, type GetUSDBalancePayload } from "@repo/types";
 import { createUser, getUserBalance } from "./services/user.service";
 import { engineReqStream, engineResStream } from "./redis/redis";
-import { createTrade } from "./services/trade.service";
+import { closeTrade, createTrade, getAllOpenTrades } from "./services/trade.service";
 
 const main = async () => {
     await engineReqStream.connect();
@@ -18,11 +18,9 @@ const main = async () => {
 
         else if (result.type === EventType.OPEN_TRADE) createTrade(result as CreateTradePayload)
 
-        else if (result.type === EventType.CLOSE_TRADE) {}
+        else if (result.type === EventType.CLOSE_TRADE) closeTrade(result as CloseTradePayload)
 
-        else if (result.type === EventType.ALL_OPEN_TRADE) {}
-
-        else if (result.type === EventType.ALL_CLOSE_TRADE) {}
+        else if (result.type === EventType.ALL_OPEN_TRADE) getAllOpenTrades(result as GetAllOpenTradesPayload)
     }
 }
 

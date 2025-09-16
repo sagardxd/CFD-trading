@@ -1,9 +1,9 @@
 import { logger, Response } from "@repo/config"
-import { OrderType, StreamName, type CreateTradePayload, type OpenTrade } from "@repo/types"
+import { OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CreateTradePayload, type GetAllOpenTradesPayload, type OpenTrade, type OpenTradeResponse } from "@repo/types"
 import { engineReqStream } from "../redis/redis"
 import { generateId } from "../utils/generate-id"
 import { MARGIN_DECIMAL } from "../constants/decimal.constants"
-import { Balances, OpenTrades } from "../store/engine.store"
+import { Balances, CloseTrades, OpenTrades } from "../store/engine.store"
 
 export const createTrade = async (input: CreateTradePayload) => {
     try {
@@ -56,6 +56,100 @@ export const createTrade = async (input: CreateTradePayload) => {
 
     } catch (error) {
         logger.error("createTrade", "error creating trade in engine")
+    }
+
+}
+
+export const closeTrade = async (input: CloseTradePayload) => {
+
+    try {
+        const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
+        const orderIndex = userOpenTrades.findIndex(order => order.id === input.payload.orderId);
+
+        if (orderIndex === -1) {
+            return Response.error("Order not found");
+        }
+
+        const order = userOpenTrades[orderIndex]!;
+
+        // current price of asset
+        const assetPrices = await engineReqStream.getLatestValue(StreamName.ASSETS);
+        const asset = assetPrices?.payload.price_updates.find((asset) => asset.asset === order.asset);
+        if (!asset) return Response.error("asset not found!");
+
+        const buyPrice = asset.price / Math.pow(10, asset.decimal);
+        const sellPrice = buyPrice - 10;
+
+        const closePrice = order.type === OrderType.BUY ? buyPrice : sellPrice;
+
+        const normalizedOpenPrice = order.open_price / Math.pow(10, asset.decimal);
+
+        const pnl = order.type === OrderType.BUY
+            ? (closePrice - normalizedOpenPrice) * order.quantity
+            : (normalizedOpenPrice - closePrice) * order.quantity;
+
+        console.log(`Calculated PnL: $${pnl}`);
+
+        const closedTrade: CloseTrade = {
+            id: order.id,
+            userId: order.userId,
+            type: order.type,
+            asset: order.asset,
+            margin: order.margin,
+            leverage: order.leverage,
+            quantity: order.quantity,
+            pnl: pnl,
+            open_price: order.open_price,
+            close_price: closePrice,
+            opened_at: order.opened_at,
+            closed_at: new Date()
+        };
+
+        console.log('closed order', closedTrade)
+
+        // Remove from open orders
+        userOpenTrades.splice(orderIndex, 1);
+        OpenTrades.set(input.payload.userId, userOpenTrades);
+
+        // Add to closed orders
+        const userClosedTrades = CloseTrades.get(input.payload.userId) || [];
+        userClosedTrades.push(closedTrade);
+        CloseTrades.set(input.payload.userId, userClosedTrades);
+
+        return Response.success({
+            orderId: closedTrade.id
+        })
+    } catch (error) {
+        logger.error("closeTrade", "error closing trade in engine", error)
+    }
+}
+
+export const getAllOpenTrades = (input: GetAllOpenTradesPayload) => {
+    try {
+        const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
+        let cleanedData: OpenTradeResponse[] = [];
+
+        if (userOpenTrades.length > 0) {
+            cleanedData = userOpenTrades.map((order: OpenTrade) => ({
+                orderId: order.id,
+                type: order.type,
+                asset: order.asset,
+                margin: order.margin,
+                leverage: order.leverage,
+                quantity: order.quantity,
+                openPrice: order.open_price,
+                openTime: order.opened_at
+            }))
+        }
+
+        console.log('open trades', cleanedData);
+
+        return {
+            trades: cleanedData,
+        }
+    } catch (error) {
+        logger.error("getAllOpenTrades", "error getting all open trades in engine", error)
+
     }
 
 }

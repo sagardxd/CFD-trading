@@ -31,6 +31,7 @@ export type CloseTrade = {
     margin: number
     leverage: number
     quantity: number
+    pnl: number
     open_price: number
     close_price: number
     opened_at: Date
