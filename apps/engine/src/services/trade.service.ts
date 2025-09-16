@@ -31,7 +31,7 @@ export const createTrade = async (input: CreateTradePayload) => {
 
         let order: OpenTrade = {
             id: orderId,
-            userId: input.payload.userId,
+            userId: input.payload.userId,   
             type: input.payload.type,
             asset: input.payload.asset,
             margin: input.payload.margin,

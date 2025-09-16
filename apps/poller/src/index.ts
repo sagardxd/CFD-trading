@@ -9,7 +9,6 @@ const main = async () => {
 
     const redisClient = createRedis(config.REDIS_URL)
     await redisClient.connect();
-    await redisClient.createGroup(StreamName.EVENTS, GroupName.EVENTS_GROUP)
 
     const backpackWS = new WebSocket("wss://ws.backpack.exchange/");
     const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
@@ -46,7 +45,7 @@ const main = async () => {
         } catch (err) {
             console.error("Error while publishing:", err);
         }
-    }, 100);
+    }, 1000);
 
 }
 
