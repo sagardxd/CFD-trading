@@ -1,10 +1,11 @@
-import { StreamName } from "@repo/types";
-import { engineResStream } from "../redis/redis";
+import { GroupName, StreamName } from "@repo/types";
+import { engineReqStream, engineResStream } from "../redis/redis";
 
-export const engineSuccessRes = <T>(
+export const engineSuccessRes = async <T>(
     requestId: string,
     data?: T,
 ) => {
+    await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENTS_GROUP, requestId);
     return engineResStream.xAddWithId<T>(StreamName.ENGINE_RES, requestId, {
         success: true,
         ...(data ? { data } : {}),

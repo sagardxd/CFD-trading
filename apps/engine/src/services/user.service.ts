@@ -3,10 +3,12 @@ import { type CreateUserPayload, type GetUSDBalancePayload, type GetUSDBalanceRe
 import { Balances } from "../store/engine.store"
 import { engineErrorRes, engineSuccessRes } from "../utils/send-engine-response";
 
-export const createUser = (data: CreateUserPayload) => {
+export const createUser = (input: CreateUserPayload) => {
     try {
-        Balances.set(data.payload.userId, { usd: 500000 });
-        logger.info(`User balance set to ${Balances.get(data.payload.userId)?.usd}`)
+        Balances.set(input.payload.userId, { usd: 500000 });
+        logger.info(`User balance set to ${Balances.get(input.payload.userId)?.usd}`)
+
+        return engineSuccessRes(input.id)
     } catch (error) {
         logger.error("createUser", "error creating user in engine", error);
     }

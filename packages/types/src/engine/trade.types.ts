@@ -18,3 +18,4 @@ export interface OpenTradeResponse {
     openPrice: number 
     openTime: Date
 }
+
