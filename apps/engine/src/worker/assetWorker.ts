@@ -7,7 +7,6 @@ export const startAssetWorker = async () => {
         const assets = await engineReqStream.readGroup(StreamName.ASSETS, GroupName.ASSET_GROUP, ConsumerName.ASSET_CONSUMER);
         if (!assets) continue;
 
-        console.log("asset result: ", assets);
         startLiquidationWorker(assets.payload);
 
     }

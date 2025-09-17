@@ -1,11 +1,22 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "./src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum Asset {
+  BTC
+  ETH
+  SOL
 }
 
 model User {
@@ -17,11 +28,14 @@ model User {
 
 model ExistingTrade {
   id String @id @default(uuid())
-  openPrice Float
   closePrice Float
+  openPrice Float
+  type TradeType
+  margin Int
   leverage Float
+  quantity Float
   pnl Float
-  assetId String
+  asset Asset
   liquidated Boolean @default(false)
   user User @relation(fields: [userId], references: [id])
   userId String

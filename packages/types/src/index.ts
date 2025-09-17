@@ -12,3 +12,5 @@ export * from './schema/user.schema'
 export * from './engine/user.types'
 export * from './engine/asset.types'
 export * from './engine/trade.types'
+
+export * from './storage/trade.types'

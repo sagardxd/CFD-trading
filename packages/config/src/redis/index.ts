@@ -37,7 +37,7 @@ class RedisClient {
   async xAddWithId<T>(streamName: StreamName, requestId: string, msg: Payload<T>) {
     try {
       if (this.client.isOpen) {
-        const id = await this.client.xAdd(streamName, "*", {requestId, message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 1000 } });
+        const id = await this.client.xAdd(streamName, "*", { requestId, message: JSON.stringify(msg) }, { TRIM: { strategy: "MAXLEN", threshold: 1000 } });
         return id;
       }
     } catch (error) {
@@ -110,6 +110,8 @@ class RedisClient {
           [{ key: streamName, id: '>' }],
           { BLOCK: block }
         )
+
+        logger.info(`group read working ${result}`)
 
         if (!result) return null;
 
@@ -187,6 +189,16 @@ class RedisClient {
       logger.info(`Acknowledged message ${messageId}`);
     } catch (error) {
       logger.error('acknowledge', 'Error acknowledging message', error);
+    }
+  }
+
+  async deleteGroup(streamName: StreamName, groupName: GroupName) {
+    try {
+      await this.client.xGroupDestroy(streamName, groupName);
+      logger.info(`deleted group ${groupName}`)
+
+    } catch (error) {
+      logger.error('deleteGroup', 'Error deleting group', error);
     }
   }
 

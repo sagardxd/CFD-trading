@@ -24,8 +24,8 @@ export const createTrade = async (input: CreateTradePayload) => {
 
         const orderId = generateId();
 
-        const buyPrice = asset.price / Math.pow(10, asset.decimal);
-        const sellPrice = buyPrice - 10;
+        const buyPrice = asset.price;
+        const sellPrice = buyPrice - 1013;
 
         const margin = input.payload.margin / Math.pow(10, MARGIN_DECIMAL);
 
@@ -43,6 +43,8 @@ export const createTrade = async (input: CreateTradePayload) => {
             ...(input.payload.stop_loss !== undefined && { stop_loss: input.payload.stop_loss }),
             ...(input.payload.take_profit !== undefined && { take_profit: input.payload.take_profit })
         }
+        // console.log('asset lal price', ass);
+        console.log("order ka data dekh le", order);
 
         const userOpenTrades = OpenTrades.get(input.payload.userId) ?? [];
         userOpenTrades.push(order);

@@ -16,5 +16,10 @@ export type Payload<T> = {
     success: boolean,
     message?: string
     data?: T
+}
 
+export type StorageResponse<T> = {
+    id: string,
+    type: EventType
+    payload: Payload<T>
 }

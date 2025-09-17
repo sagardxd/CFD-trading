@@ -8,14 +8,13 @@ export const startEventWorker = async () => {
         const result = await engineReqStream.readGroup(StreamName.EVENTS, GroupName.EVENT_GROUP, ConsumerName.EVENT_CONSUMER);
         if (!result) continue;
 
-        console.log("event result: ", result);
 
         switch (result.type) {
             case EventType.CREATE_USER:
-                await createUser(result as CreateUserPayload);
+                createUser(result as CreateUserPayload);
                 break;
             case EventType.BALANCE_USD:
-                await getUserUSDBalance(result as GetUSDBalancePayload);
+                getUserUSDBalance(result as GetUSDBalancePayload);
                 break;
             case EventType.OPEN_TRADE:
                 await createTrade(result as CreateTradePayload);
@@ -24,7 +23,7 @@ export const startEventWorker = async () => {
                 await closeTrade(result as CloseTradePayload);
                 break;
             case EventType.ALL_OPEN_TRADE:
-                await getAllOpenTrades(result as GetAllOpenTradesPayload);
+                getAllOpenTrades(result as GetAllOpenTradesPayload);
                 break;
             default:
                 console.warn("Unknown event type:", result.type);

@@ -5,7 +5,9 @@ import { logger } from "@repo/config";
 export const enginerRequest = async (type: EventType, data: any) => {
     try {
         const id = await engineReqStream.xAdd(StreamName.EVENTS, type, data);
+        if(id) logger.info("suceesfull added")
         return id;
+
     } catch (error) {
         logger.error("enginerRequest", "error while requesting to the engine", error)
         return null;

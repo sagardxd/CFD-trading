@@ -9,6 +9,7 @@ export const RedisInit = async () => {
         engineReqStream.connect()
         engineResStream.connect()
 
+        await engineResStream.deleteGroup(StreamName.ENGINE_RES, GroupName.ENGINE_RES_GROUP);
         await engineResStream.createGroup(StreamName.ENGINE_RES, GroupName.ENGINE_RES_GROUP);
     } catch (error) {
         logger.error('RedisInit', 'Error in initing redis', error)

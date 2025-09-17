@@ -5,6 +5,7 @@ import { logger } from "@repo/config";
 import { enginerRequest, enginerResponse } from "../utils/engine-helper";
 
 export const getUSDBalance = async (req: Request, res: Response<ApiResponse<any>>) => {
+    console.log('inside backend');
     try {
         const userId = req.user!.id;
 
@@ -14,7 +15,6 @@ export const getUSDBalance = async (req: Request, res: Response<ApiResponse<any>
         const response = await enginerResponse<GetUSDBalanceResponse>(id);
         if (!response) return ApiResponseTimedOut(res);
 
-        console.log('response', response);
 
         return EngineApiResponse(res, response);
     } catch (error: any) {
