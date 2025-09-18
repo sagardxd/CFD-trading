@@ -163,7 +163,6 @@ class RedisClient {
               await this.acknowledge(streamName, groupName, match.id);
               return match;
             }
-
             // For non-matching ones → don’t ack, just leave them pending
           }
         }
@@ -179,7 +178,6 @@ class RedisClient {
     // Timed out
     return null;
   }
-
 
   async acknowledge(streamName: StreamName, groupName: GroupName, messageId: string) {
     try {
@@ -199,7 +197,6 @@ class RedisClient {
       logger.error('deleteGroup', 'Error deleting group', error);
     }
   }
-
 
   async disconnect() {
     if (this.client.isOpen) this.client.disconnect();

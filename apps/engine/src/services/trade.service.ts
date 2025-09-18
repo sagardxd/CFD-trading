@@ -121,7 +121,7 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
     }
 }
 
-export const getAllOpenTrades = (input: GetAllOpenTradesPayload) => {
+export const getAllOpenTrades = async(input: GetAllOpenTradesPayload) => {
     try {
         const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
 

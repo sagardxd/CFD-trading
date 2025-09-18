@@ -1,5 +1,6 @@
-import { OrderType, type CloseTrade, type WSData } from "@repo/types";
+import { EventType, OrderType, StreamName, type CloseTrade, type WSData } from "@repo/types";
 import { CloseTrades, OpenTrades } from "../store/engine.store"
+import { engineResStream } from "../redis/redis";
 
 export const startLiquidationWorker = async (assets: WSData) => {
     try {
@@ -64,6 +65,9 @@ export const startLiquidationWorker = async (assets: WSData) => {
                     CloseTrades.set(userId, userClosed);
 
                     console.log(`PnL: $${pnl.toFixed(2)}`);
+
+                    // entry in db
+                    await engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, { order: closedTrade });
                 }
             }
         }

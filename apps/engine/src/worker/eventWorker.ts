@@ -15,10 +15,10 @@ export const startEventWorker = async () => {
 
         switch (result.type) {
             case EventType.CREATE_USER:
-                createUser(result as CreateUserPayload);
+                await createUser(result as CreateUserPayload);
                 break;
             case EventType.BALANCE_USD:
-                getUserUSDBalance(result as GetUSDBalancePayload);
+                await getUserUSDBalance(result as GetUSDBalancePayload);
                 break;
             case EventType.OPEN_TRADE:
                 createTrade(result as CreateTradePayload, assetData);
@@ -27,11 +27,11 @@ export const startEventWorker = async () => {
                 await closeTrade(result as CloseTradePayload, assetData);
                 break;
             case EventType.ALL_OPEN_TRADE:
-                getAllOpenTrades(result as GetAllOpenTradesPayload);
+                await getAllOpenTrades(result as GetAllOpenTradesPayload);
                 break;
             case EventType.ASSET:
                 assetData = result.payload;
-                startLiquidationWorker(result.payload);
+                await startLiquidationWorker(result.payload);
                 break;
             default:
                 console.warn("Unknown event type:", result.type);
