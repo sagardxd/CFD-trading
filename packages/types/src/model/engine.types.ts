@@ -21,5 +21,5 @@ export type Payload<T> = {
 export type StorageResponse<T> = {
     id: string,
     type: EventType
-    payload: Payload<T>
+    payload: T
 }

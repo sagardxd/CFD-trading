@@ -1,5 +1,5 @@
 import { logger } from "@repo/config"
-import { redisClient } from "../redis/redis.types"
+import { redisClient } from "../redis/redis-init"
 import { ConsumerName, EventType, GroupName, StreamName, type CloseTradeStorageResponse } from "@repo/types"
 import { saveCloseTrade } from "../services/trade.service";
 

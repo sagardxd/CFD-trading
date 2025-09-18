@@ -11,7 +11,8 @@ export enum OrderType {
 
 export interface AssetData {
     asset: Asset,
-    price: number
+    bidPrice: number
+    askPrice: number
     decimal: number
 }
 

@@ -1,9 +1,13 @@
-import { ConsumerName, EventType, GroupName, StreamName, type CloseTradePayload, type CreateTradePayload, type CreateUserPayload, type GetAllOpenTradesPayload, type GetUSDBalancePayload } from "@repo/types";
+import { ConsumerName, EventType, GroupName, StreamName, type CloseTradePayload, type CreateTradePayload, type CreateUserPayload, type GetAllOpenTradesPayload, type GetUSDBalancePayload, type WSData } from "@repo/types";
 import { engineReqStream } from "../redis/redis";
 import { createUser, getUserUSDBalance } from "../services/user.service";
 import { closeTrade, createTrade, getAllOpenTrades } from "../services/trade.service";
+import { startLiquidationWorker } from "./liquidateWorker";
 
 export const startEventWorker = async () => {
+
+    let assetData: WSData = { price_updates: [] };
+
     while (true) {
         const result = await engineReqStream.readGroup(StreamName.EVENTS, GroupName.EVENT_GROUP, ConsumerName.EVENT_CONSUMER);
         if (!result) continue;
@@ -17,13 +21,17 @@ export const startEventWorker = async () => {
                 getUserUSDBalance(result as GetUSDBalancePayload);
                 break;
             case EventType.OPEN_TRADE:
-                await createTrade(result as CreateTradePayload);
+                createTrade(result as CreateTradePayload, assetData);
                 break;
             case EventType.CLOSE_TRADE:
-                await closeTrade(result as CloseTradePayload);
+                await closeTrade(result as CloseTradePayload, assetData);
                 break;
             case EventType.ALL_OPEN_TRADE:
                 getAllOpenTrades(result as GetAllOpenTradesPayload);
+                break;
+            case EventType.ASSET:
+                assetData = result.payload;
+                startLiquidationWorker(result.payload);
                 break;
             default:
                 console.warn("Unknown event type:", result.type);

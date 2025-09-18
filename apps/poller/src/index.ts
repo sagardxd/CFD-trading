@@ -1,4 +1,4 @@
-import { EventType, GroupName, StreamName, type AssetData, type WSData } from '@repo/types';
+import { EventType, StreamName, type AssetData, type WSData } from '@repo/types';
 import {createRedis, config} from '@repo/config'
 
 const main = async () => {
@@ -22,9 +22,10 @@ const main = async () => {
         const response = JSON.parse(event.data);
         const data = response.data;
 
-        const parsed: AssetData = {
+        const parsed: AssetData = { 
             asset: data.s.replace("_USDC", ""),
-            price: Math.round(Number(data.a) * Math.pow(10, data.a.split(".")[1].length)),
+            askPrice: Math.round(Number(data.a) * Math.pow(10, data.a.split(".")[1].length)),
+            bidPrice: Math.round(Number(data.b) * Math.pow(10, data.a.split(".")[1].length)),
             decimal: data.a.split(".")[1].length
         }
 
@@ -39,7 +40,7 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                const id = await redisClient.xAdd(StreamName.ASSETS, EventType.ASSET, assets);
+                const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
                 console.log(id)
             }
         } catch (err) {

@@ -3,11 +3,11 @@ import { prisma } from "@repo/db"
 import type { CloseTradeStorageResponse } from "@repo/types"
 
 export const saveCloseTrade = async(input: CloseTradeStorageResponse) => {
-    const order = input.payload.data?.order;
+    const order = input.payload.order
     if (!order) return;
 
     try {
-        await prisma.existingTrade.create({
+        const trade = await prisma.existingTrade.create({
             data: {
                 id: order.id,
                 asset: order.asset,
@@ -22,6 +22,7 @@ export const saveCloseTrade = async(input: CloseTradeStorageResponse) => {
                 userId: order.userId,
             }
         })
+        logger.info(`Closed trade on ${trade.asset}`)
     } catch (error) {
         logger.error('saveCloseTrade', 'error saving close trade in db  ')
     }

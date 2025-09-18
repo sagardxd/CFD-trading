@@ -1,16 +1,15 @@
 import { logger, Response } from "@repo/config"
-import { EventType, OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse } from "@repo/types"
+import { EventType, OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse, type WSData } from "@repo/types"
 import { engineReqStream, engineResStream } from "../redis/redis"
 import { generateId } from "../utils/generate-id"
 import { MARGIN_DECIMAL } from "../constants/decimal.constants"
 import { Balances, CloseTrades, OpenTrades } from "../store/engine.store"
 import { engineErrorRes, engineSuccessRes } from "../utils/send-engine-response"
 
-export const createTrade = async (input: CreateTradePayload) => {
+export const createTrade = async (input: CreateTradePayload, assetData: WSData) => {
     try {
         const userBalance = Balances.get(input.payload.userId)?.usd;
         if (!userBalance) return engineErrorRes(input.id, 'User not found')
-
 
         if ((userBalance - input.payload.margin) < 0) return engineErrorRes(input.id, 'Not enough balance!')
 
@@ -18,16 +17,15 @@ export const createTrade = async (input: CreateTradePayload) => {
         Balances.set(input.payload.userId, { usd: userBalance - input.payload.margin });
         logger.info(`User curr balance: ${Balances.get(input.payload.userId)?.usd}`)
 
-        const assetPrices = await engineReqStream.getLatestValue(StreamName.ASSETS);
-        const asset = assetPrices?.payload.price_updates.find((asset) => asset.asset === input.payload.asset);
+        const asset = assetData.price_updates.find((asset) => asset.asset === input.payload.asset);
         if (!asset) return engineErrorRes(input.id, 'Asset not found')
 
         const orderId = generateId();
 
-        const buyPrice = asset.price;
-        const sellPrice = buyPrice - 1013;
+        const buyPrice = asset.bidPrice;
+        const sellPrice = asset.askPrice;
 
-        const margin = input.payload.margin / Math.pow(10, MARGIN_DECIMAL);
+        const margin = input.payload.margin;
 
         let order: OpenTrade = {
             id: orderId,
@@ -37,14 +35,13 @@ export const createTrade = async (input: CreateTradePayload) => {
             margin: input.payload.margin,
             leverage: input.payload.leverage,
             quantity: input.payload.type === OrderType.BUY ? ((margin * input.payload.leverage) / buyPrice) : ((margin * input.payload.leverage) / sellPrice),
-            open_price: input.payload.type === OrderType.BUY ? (buyPrice * Math.pow(10, asset.decimal)) : (sellPrice * Math.pow(10, asset.decimal)),
-            liquidation_price: input.payload.type === OrderType.BUY ? (buyPrice * (1 - 1 / input.payload.leverage) * Math.pow(10, asset.decimal)) : (sellPrice * (1 + 1 / input.payload.leverage) * Math.pow(10, asset.decimal)),
+            open_price: input.payload.type === OrderType.BUY ? buyPrice : sellPrice,
+            liquidation_price: input.payload.type === OrderType.BUY ? (buyPrice * (1 - 1 / input.payload.leverage)) : (sellPrice * (1 + 1 / input.payload.leverage)),
             opened_at: new Date(),
             ...(input.payload.stop_loss !== undefined && { stop_loss: input.payload.stop_loss }),
             ...(input.payload.take_profit !== undefined && { take_profit: input.payload.take_profit })
         }
-        // console.log('asset lal price', ass);
-        console.log("order ka data dekh le", order);
+
 
         const userOpenTrades = OpenTrades.get(input.payload.userId) ?? [];
         userOpenTrades.push(order);
@@ -61,31 +58,32 @@ export const createTrade = async (input: CreateTradePayload) => {
 
 }
 
-export const closeTrade = async (input: CloseTradePayload) => {
+export const closeTrade = async (input: CloseTradePayload, assetData: WSData) => {
 
     try {
         const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
-        const orderIndex = userOpenTrades.findIndex(order => order.id === input.payload.orderId);
+
+        const orderIndex = userOpenTrades.findIndex(order => order.id === input.payload.tradeId);
+
 
         if (orderIndex === -1) return engineErrorRes(input.id, 'Order not found!')
 
         const order = userOpenTrades[orderIndex]!;
 
         // current price of asset
-        const assetPrices = await engineReqStream.getLatestValue(StreamName.ASSETS);
-        const asset = assetPrices?.payload.price_updates.find((asset) => asset.asset === order.asset);
+        const asset = assetData.price_updates.find((asset) => asset.asset === order.asset);
         if (!asset) return engineErrorRes(input.id, 'Asset not found!')
 
-        const buyPrice = asset.price / Math.pow(10, asset.decimal);
-        const sellPrice = buyPrice - 10;
+        const buyPrice = asset.bidPrice;
+        const sellPrice = asset.askPrice;
 
         const closePrice = order.type === OrderType.BUY ? buyPrice : sellPrice;
 
-        const normalizedOpenPrice = order.open_price / Math.pow(10, asset.decimal);
+        const pnlRaw = order.type === OrderType.BUY
+            ? (closePrice - order.open_price) * order.quantity
+            : (order.open_price - closePrice) * order.quantity;
 
-        const pnl = order.type === OrderType.BUY
-            ? (closePrice - normalizedOpenPrice) * order.quantity
-            : (normalizedOpenPrice - closePrice) * order.quantity;
+        const pnl = Number(pnlRaw.toFixed(5));
 
         console.log(`Calculated PnL: $${pnl}`);
 
@@ -104,8 +102,6 @@ export const closeTrade = async (input: CloseTradePayload) => {
             closed_at: new Date()
         };
 
-        console.log('closed order', closedTrade)
-
         // Remove from open orders
         userOpenTrades.splice(orderIndex, 1);
         OpenTrades.set(input.payload.userId, userOpenTrades);
@@ -116,7 +112,7 @@ export const closeTrade = async (input: CloseTradePayload) => {
         CloseTrades.set(input.payload.userId, userClosedTrades);
 
         // entry in db
-        engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, {order: closedTrade});
+        await engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, {order: closedTrade});
 
         return engineSuccessRes<CloseTradeResponse>(input.id, { orderId: order.id })
     } catch (error) {
@@ -128,6 +124,7 @@ export const closeTrade = async (input: CloseTradePayload) => {
 export const getAllOpenTrades = (input: GetAllOpenTradesPayload) => {
     try {
         const userOpenTrades = OpenTrades.get(input.payload.userId) || [];
+
         let cleanedData: OpenTradeResponse[] = [];
 
         if (userOpenTrades.length > 0) {

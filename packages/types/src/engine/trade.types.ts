@@ -5,7 +5,7 @@ import type { CreateTradeInput } from "../schema/trade.schema"
 import type { EngineUser } from "./user.types"
 
 export type CreateTradePayload = EngineRequest<CreateTradeInput & EngineUser>
-export type CloseTradePayload = EngineRequest<{ orderId: string } & EngineUser>
+export type CloseTradePayload = EngineRequest<{ tradeId: string } & EngineUser>
 export type GetAllOpenTradesPayload = EngineRequest<EngineUser>
 
 export interface OpenTradeResponse {

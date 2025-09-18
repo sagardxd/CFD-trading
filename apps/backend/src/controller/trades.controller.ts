@@ -2,13 +2,11 @@ import { createTradeSchema, EventType, StreamName, type ApiResponse, type CloseT
 import type { Request, Response } from 'express';
 import { ApiResponseTimedOut, ApiSuccessResponse, EngineApiResponse, InvalidInputs, ServerError } from '../utils/api-response';
 import { logger } from '@repo/config';
-import { engineReqStream, engineResStream } from '../redis/redis-setup';
 import { enginerRequest, enginerResponse } from '../utils/engine-helper';
 import { getAllExistingTrades } from '../services/trade.service';
 
 export const createTrade = async (req: Request, res: Response<ApiResponse<createTradeResponse>>) => {
     try {
-        console.log('jere');
         const userId = req.user!.id
         const parsedData = createTradeSchema.safeParse(req.body)
 
@@ -19,7 +17,6 @@ export const createTrade = async (req: Request, res: Response<ApiResponse<create
         const id = await enginerRequest(EventType.OPEN_TRADE, { userId: userId, ...parsedData.data });
         if (!id) return ServerError(res);
 
-        console.log('id', id);
 
         const response = await enginerResponse<CreateTradeResponse>(id);
         if (!response) return ApiResponseTimedOut(res);

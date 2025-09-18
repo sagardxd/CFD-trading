@@ -5,7 +5,7 @@ export const engineSuccessRes = async <T>(
     requestId: string,
     data?: T,
 ) => {
-    // await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENTS_GROUP, requestId);
+    await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENT_GROUP, requestId);
     return engineResStream.xAddWithId<T>(StreamName.ENGINE_RES, requestId, {
         success: true,
         ...(data ? { data } : {}),

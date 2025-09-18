@@ -111,8 +111,6 @@ class RedisClient {
           { BLOCK: block }
         )
 
-        logger.info(`group read working ${result}`)
-
         if (!result) return null;
 
         const stream = result.find((stream) => stream.name === streamName);

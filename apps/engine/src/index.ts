@@ -9,11 +9,7 @@ const main = async () => {
     // TODO REMOVE IT
     Balances.set("1416fdda-2637-404c-be20-cdf4a99b5abc", { usd: 500000 });
 
-    await Promise.all([
-        startEventWorker(),
-        startAssetWorker()
-    ]);
-
-}
+    await startEventWorker();
+}   
 
 main();
