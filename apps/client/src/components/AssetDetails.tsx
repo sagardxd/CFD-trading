@@ -1,10 +1,11 @@
 import ThemedText from '@/src/components/common/ThemedText'
-import { Symbol } from '@/src/types/live-price.types'
+import { Asset } from '@repo/types'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+import AssetImage from './asset/AssetImage'
 
 interface AssetDetailsProps {
-  asset: Symbol
+  asset: Asset
   assetPrice: string
   margin: string
   leverage: number
@@ -15,10 +16,8 @@ const AssetDetails: React.FC<AssetDetailsProps> = ({ asset, margin, leverage, as
     <View style={styles.container}>
       <View style={styles.selector}>
         <View style={styles.assetInfo}>
-          <View style={styles.icon}>
-            <ThemedText style={styles.iconText}>{asset.replace("USDT", "").charAt(0)}</ThemedText>
-          </View>
-          <ThemedText style={styles.name}>{asset.replace("USDT", "")}</ThemedText>
+          <AssetImage asset={asset}/>
+          <ThemedText style={styles.name}>{asset}</ThemedText>
         </View>
         {assetPrice && margin ? <ThemedText style={styles.amountValue}>{((Number(margin) * leverage)/parseFloat(assetPrice)).toFixed(8)}</ThemedText> :
         <ThemedText style={styles.amountValue}>0</ThemedText>
@@ -47,20 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-  },
-  icon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#8B5CF6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  iconText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
+    gap: 6
   },
   name: {
     color: '#fff',

@@ -28,8 +28,8 @@ const Trade: React.FC<TradeProps> = ({ selectedAsset, data, onOpenModal }) => {
           onPress={handleBuyOrder}
           activeOpacity={0.8}
         >
-          <ThemedText style={styles.buyButtonText} size='md'>
-            Buy {selectedAsset.toString() || "Asset"}
+          <ThemedText style={styles.buyButtonText} size='button'>
+            Long {selectedAsset.toString() || "Asset"}
           </ThemedText>
           {data?.bidPrice && <ThemedText size='sm' style={styles.priceButtonText}>{(Number(data.bidPrice) / 10000).toFixed(3)}</ThemedText>}
         </TouchableOpacity>
@@ -39,8 +39,8 @@ const Trade: React.FC<TradeProps> = ({ selectedAsset, data, onOpenModal }) => {
           onPress={handleSellOrder}
           activeOpacity={0.8}
         >
-          <ThemedText style={styles.sellButtonText} size='md'>
-            Sell {selectedAsset.toString() || "Asset"}
+          <ThemedText style={styles.sellButtonText} size='button'>
+            Short {selectedAsset.toString() || "Asset"}
           </ThemedText>
           {data?.askPrice && <ThemedText size='sm' style={styles.priceButtonText}>{(Number(data.askPrice) / 10000).toFixed(3)}</ThemedText>}
         </TouchableOpacity>

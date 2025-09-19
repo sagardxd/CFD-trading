@@ -6,13 +6,13 @@ import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import React, { useMemo, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import LeverageControls from './LeverageControls'
-import { Asset, OrderType, WSData } from '@repo/types'
+import { Asset, AssetData, OrderType, WSData } from '@repo/types'
 
 interface TradingModalProps {
   isVisible: boolean
   onClose: () => void
   selectedAsset: Asset
-  data: WSData | null
+  data: AssetData | null
   tradeType: OrderType
 }
 
@@ -24,7 +24,7 @@ const TradingModal: React.FC<TradingModalProps> = ({
   tradeType,
 }) => {
   const [margin, setMargin] = useState('')
-  const [leverage, setLeverage] = useState(1.1)
+  const [leverage, setLeverage] = useState(1.0)
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   const snapPoints = useMemo(() => ['85%'], [])
@@ -39,13 +39,11 @@ const TradingModal: React.FC<TradingModalProps> = ({
     setLeverage(prev => Math.max(Math.round(prev) - 10, 1))
   }
 
-  const currentPrice = "10";
-
-  // const currentPrice = tradeType === OrderType.BUY && data
-  //   ? (Number(data.buyPrice) / 10000).toFixed(3)
-  //   : tradeType === 'sell' && data?.sellPrice
-  //   ? (Number(data.sellPrice) / 10000).toFixed(3)
-  //   : 'N/A'
+  const currentPrice = tradeType === OrderType.BUY && data
+    ? (Number(data.bidPrice) / 10000).toFixed(3)
+    : tradeType === OrderType.SELL && data?.askPrice
+    ? (Number(data.askPrice) / 10000).toFixed(3)
+    : 'N/A'
 
   // Check if button should be disabled
   const isButtonDisabled = !margin || Number(margin) <= 0
@@ -76,12 +74,12 @@ const TradingModal: React.FC<TradingModalProps> = ({
 
             <View style={styles.section}>
               <ThemedText variant="secondary" style={styles.sectionTitle}>Asset Details</ThemedText>
-              {/* <AssetDetails
+              <AssetDetails
                 asset={selectedAsset} 
                 assetPrice={currentPrice}
                 margin={margin}
                 leverage={leverage} 
-              /> */}
+              />
             </View>
 
             <View style={styles.section}>

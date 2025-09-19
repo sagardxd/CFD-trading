@@ -11,8 +11,7 @@ const index = () => {
   const styles = homeStyles;
   const [assets, setAssets] = useState<AssetData[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<Asset>(Asset.BTC);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [tradeType, setTradeType] = useState<OrderType>(OrderType.BUY);
+  
 
   const demoAssets: AssetData[] = [
     {
@@ -35,17 +34,6 @@ const index = () => {
     }
   ]
 
-  // Trading modal handlers
-  const handleOpenModal = (type: OrderType) => {
-    setTradeType(type);
-    setIsModalVisible(true);
-  };
-
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  };
-
   return (
     <View style={styles.container}>
       <SafeAreaView />
@@ -64,22 +52,7 @@ const index = () => {
       <View style={styles.middleSection}>
         <OrderHistory />
       </View>
-      
-      <View style={styles.bottomContainer}>
-        <Trade
-          selectedAsset={selectedAsset}
-          data={null}
-          onOpenModal={handleOpenModal}
-        />
-      </View>
-
-      <TradingModal
-        isVisible={isModalVisible}
-        onClose={handleCloseModal}
-        selectedAsset={selectedAsset}
-        data={null}
-        tradeType={tradeType}
-      /> */}
+ */}
 
     </View>
   )
@@ -96,16 +69,7 @@ const homeStyles = StyleSheet.create({
   topSection: {
     flex: 0,
   },
-  middleSection: {
-    flex: 1,
-    marginBottom: 80
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  }
+
 })
 
 export default index

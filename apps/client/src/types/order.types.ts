@@ -42,3 +42,8 @@ export interface CloseOrder {
     openTime: Date
     closeTime: Date
 }
+
+export enum OrderStatus {
+    OPEN = 'open',
+    CLOSE = 'close'
+}

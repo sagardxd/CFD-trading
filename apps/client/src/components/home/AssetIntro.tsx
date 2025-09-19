@@ -1,20 +1,34 @@
 import { fetchBinanceKlines } from '@/src/services/api';
 import { ThemeColor } from '@/src/theme/theme-color';
 import { AssetData } from '@repo/types';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { LineChart } from "react-native-gifted-charts";
 import ThemedText from '../common/ThemedText';
+import { SUPPORTED_ASSETS } from '@/src/constants/supportedAsset';
+import AssetImage from '../asset/AssetImage';
 
 interface AssetIntroProps {
   asset: AssetData
 }
 
 const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
+  const router = useRouter();
   const styles = AssetStyles
   const [chartData, setChartData] = useState<{ value: number; dataPointText: string }[]>([]);
   const [lineChartColor, setLineChartColor] = useState<'green' | 'red'>('green')
   const [isLoading, setIsLoading] = useState(true);
+
+
+  const handleAssetPress = () => {
+    router.push({
+      pathname: '/asset-details',
+      params: {
+        assetData: JSON.stringify(asset)
+      }
+    });
+  };
 
   // Fetch K-lines data when component mounts or asset changes
   useEffect(() => {
@@ -39,11 +53,14 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
 
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={handleAssetPress}>
       <View style={styles.leftSection}>
-        <ThemedText size="lg" variant="primary" >
-          {asset.asset}
-        </ThemedText>
+        <View style={styles.title}>
+          <AssetImage asset={asset.asset}/>
+          <ThemedText size="lg" variant="primary" >
+            {asset.asset}
+          </ThemedText>
+        </View>
 
         <View>
           <View style={styles.priceRow}>
@@ -90,7 +107,7 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
           </View>
         )}
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
@@ -108,9 +125,16 @@ const AssetStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ThemeColor.border,
   },
+
   leftSection: {
     flex: 1,
     marginRight: 16,
+    gap: 8
+  },
+  title: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center'
   },
   priceRow: {
     flexDirection: 'row',

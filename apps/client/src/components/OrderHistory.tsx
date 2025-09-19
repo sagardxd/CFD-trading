@@ -1,16 +1,18 @@
 import ThemedText from '@/src/components/common/ThemedText'
 import OrderItem from '@/src/components/OrderItem'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { Order, OrderStatus } from '@/src/types/order.types'
 import React, { useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
+import { OrderStatus } from '../types/order.types'
+
+
 
 const OrderHistory = () => {
-    const [selectedStatus, setSelectedStatus] = useState<OrderStatus>('open')
+    const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(OrderStatus.OPEN)
 
     // Separate arrays for open and closed orders
-    const [openOrders] = useState<Order[]>([
+    const [openOrders] = useState<any[]>([
         { 
             id: '1', 
             symbol: 'BTCUSDT', 
@@ -29,7 +31,7 @@ const OrderHistory = () => {
         },
     ])
 
-    const [closedOrders] = useState<Order[]>([
+    const [closedOrders] = useState<any[]>([
         { 
             id: '3', 
             symbol: 'BTCUSDT', 
@@ -51,8 +53,8 @@ const OrderHistory = () => {
     ])
 
     const statusOptions: { key: OrderStatus; label: string }[] = [
-        { key: 'open', label: 'Open' },
-        { key: 'close', label: 'Close' }
+        { key: OrderStatus.OPEN, label: 'Open' },
+        { key: OrderStatus.CLOSE, label: 'Close' }
     ]
 
     const handleStatusSelect = (status: OrderStatus) => {
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     },
     tabsContainer: {
         flexDirection: 'row',
-        backgroundColor: ThemeColor.backgroundLight,
+        backgroundColor: ThemeColor.card,
         borderRadius: 24,
         borderWidth: 1,
         borderColor: ThemeColor.border,

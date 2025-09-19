@@ -11,7 +11,7 @@ export const ThemeColor = {
         tertiary: '#64748b',
     },
     // Accent colors
-    success: 'green', // Subtle green for success/positive
-    error: 'red', // Subtle red for errors/negative
+    success: '#22c55e', // Subtle green for success/positive
+    error: '#ef4444', // Subtle red for errors/negative
     border: '#2d2d2d', // Subtle border color
 }

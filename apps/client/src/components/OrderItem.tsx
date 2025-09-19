@@ -1,11 +1,10 @@
 import ThemedText from '@/src/components/common/ThemedText'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { Order } from '@/src/types/order.types'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface OrderItemProps {
-  order: Order
+  order: any
   onCloseOrder?: (orderId: string) => void
 }
 
@@ -22,7 +21,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, onCloseOrder }) => {
           <View style={styles.topSection}>
             <View style={styles.assetInfo}>
               <ThemedText style={styles.assetName} size='md'>
-                {order.symbol.replace('USDT', '')}
+                {order.symbol}
               </ThemedText>
             </View>
             <View style={styles.topRight}>
@@ -111,7 +110,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, onCloseOrder }) => {
 
 const styles = StyleSheet.create({
   orderItem: {
-    backgroundColor: ThemeColor.backgroundLight,
+    backgroundColor: ThemeColor.card,
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
