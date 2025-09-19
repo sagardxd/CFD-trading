@@ -13,6 +13,7 @@ interface AssetIntroProps {
 const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
   const styles = AssetStyles
   const [chartData, setChartData] = useState<{ value: number; dataPointText: string }[]>([]);
+  const [lineChartColor, setLineChartColor] = useState<'green' | 'red'>('green')
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch K-lines data when component mounts or asset changes
@@ -22,6 +23,9 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
       try {
         const data = await fetchBinanceKlines(asset.asset, '1w', 20);
         setChartData(data)
+
+        const lastIndex = data.length - 1;
+        if (data[0].value > data[lastIndex].value) setLineChartColor('red')
       } catch (error) {
         console.error('Error loading chart data:', error);
       } finally {
@@ -37,11 +41,11 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftSection}>
-        <ThemedText size="lg" variant="primary" style={styles.assetName}>
+        <ThemedText size="lg" variant="primary" >
           {asset.asset}
         </ThemedText>
 
-        <View style={styles.priceContainer}>
+        <View>
           <View style={styles.priceRow}>
             <ThemedText size="sm" variant="secondary" >
               Bid:
@@ -71,7 +75,7 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
           <View >
             <LineChart
               data={chartData}
-              color={ThemeColor.primary}
+              color={lineChartColor}
               curved
               hideDataPoints
               hideRules
@@ -97,9 +101,9 @@ const AssetStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 10,
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: ThemeColor.border,
@@ -107,12 +111,6 @@ const AssetStyles = StyleSheet.create({
   leftSection: {
     flex: 1,
     marginRight: 16,
-  },
-  assetName: {
-    marginBottom: 8,
-  },
-  priceContainer: {
-    gap: 4,
   },
   priceRow: {
     flexDirection: 'row',
@@ -126,8 +124,8 @@ const AssetStyles = StyleSheet.create({
     width: 120,
     height: 60,
     borderRadius: 8,
-    backgroundColor: ThemeColor.backgroundLight,
     padding: 4,
+    marginRight: 10
   },
   chart: {
     width: 100,
