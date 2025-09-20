@@ -31,16 +31,16 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
             setLoading(true);
             setError(null);
             const data = await fetchBinanceKlines(asset, selectedInterval, 20);
-            
+
             // Add date information to the data with labels
             const dataWithDates = data.map((item, index) => {
                 const now = new Date();
                 const date = new Date(now.getTime() - (data.length - index - 1) * getIntervalMs(selectedInterval));
                 const formattedDate = formatDate(date, selectedInterval);
-                
+
                 // Add labels for every few data points to show time on chart
                 const shouldShowLabel = index % Math.max(1, Math.floor(data.length / 4)) === 0 || index === data.length - 1;
-                
+
                 return {
                     ...item,
                     date: formattedDate,
@@ -50,7 +50,7 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
                     })
                 };
             });
-            
+
             setChartData(dataWithDates);
         } catch (err) {
             setError('Failed to fetch chart data');
@@ -76,19 +76,19 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
         // For all intervals, show consistent date format
         const today = new Date();
         const isToday = date.toDateString() === today.toDateString();
-        
+
         if (isToday) {
             // If it's today, show time
-            return date.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
                 minute: '2-digit',
-                hour12: false 
+                hour12: false
             });
         } else {
             // If it's not today, show date
-            return date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
             });
         }
     };
@@ -100,18 +100,8 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
     const dataMax = Math.max(...chartData.map(d => d.value));
     const dataMin = Math.min(...chartData.map(d => d.value));
     const priceRange = dataMax - dataMin;
-    
+
     const maxValue = dataMax + (priceRange * 0.1); // 10% above highest price
-    if (loading) {
-        return (
-            <View style={styles.container}>
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={ThemeColor.primary} />
-                    <Text style={styles.loadingText}>Loading chart data...</Text>
-                </View>
-            </View>
-        );
-    }
 
     if (error) {
         return (
@@ -149,7 +139,13 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
                 ))}
             </View>
 
-            {/* Chart */}
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={ThemeColor.primary} />
+                </View>
+            ): 
+
+      (
             <View style={styles.chartContainer}>
                 <LineChart
                     areaChart
@@ -200,6 +196,7 @@ const AssetChart: React.FC<AssetChartProps> = ({ asset }) => {
                     }}
                 />
             </View>
+      )}
         </View>
     );
 };
@@ -210,6 +207,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         overflow: 'hidden',
+        height: 380,
+        alignItems: 'center',
     },
     toggleContainer: {
         flexDirection: 'row',
@@ -245,6 +244,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     loadingContainer: {
+        flex: 1,
         padding: 40,
         alignItems: 'center',
         justifyContent: 'center',

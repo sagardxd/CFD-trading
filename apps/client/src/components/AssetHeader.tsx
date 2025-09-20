@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: ThemeColor.border,
-    marginHorizontal: 16
+    marginHorizontal: 16,
+    marginTop: 10
   },
   assetInfo: {
     flexDirection: 'row',

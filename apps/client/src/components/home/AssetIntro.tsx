@@ -93,8 +93,11 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
             <LineChart
               data={chartData}
               color={lineChartColor}
+              areaChart
               curved
               hideDataPoints
+              startFillColor="rgba(20,105,81,0.3)"
+              endFillColor= 'rgba(31,31,31,0.01)' 
               hideRules
               hideAxesAndRules
               backgroundColor="transparent"

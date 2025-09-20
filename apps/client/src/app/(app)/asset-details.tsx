@@ -9,12 +9,13 @@ import AssetChart from '@/src/components/chart/AssetChart';
 import AssetHeader from '@/src/components/AssetHeader';
 import TradingModal from '@/src/components/TradingModal';
 import Trade from '@/src/components/Trade';
-import OrderHistory from '@/src/components/OrderHistory';
 import { useAssetStore } from '@/src/store/assets.store';
 import OpenOrders from '@/src/components/OpenOrders';
+import ThemeHeaderBackButton from '@/src/components/common/ThemeHeaderBackButton';
 
 const AssetDetails = () => {
   const styles = assetDetailsStyles;
+  const router = useRouter();
   const { assetData } = useLocalSearchParams<{ assetData: string }>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [tradeType, setTradeType] = useState<OrderType>(OrderType.BUY);
@@ -56,6 +57,7 @@ const AssetDetails = () => {
   return (
     <View style={styles.container}>
       <SafeAreaView />
+      <ThemeHeaderBackButton onPress={() => router.back()} />
 
       <AssetHeader asset={assetDataFromStore} />
       <AssetChart asset={asset.asset} />
