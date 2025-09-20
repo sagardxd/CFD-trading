@@ -9,9 +9,9 @@ import { useAssetStore } from '@/src/store/assets.store'
 import { useNavigation, useRouter } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { successToast } from '@/src/utils/toast'
 
 const Home = () => {
-    const router = useRouter();
     const navigation = useNavigation();
     const styles = homeStyles;
     const [isClient, setIsClient] = useState(false);

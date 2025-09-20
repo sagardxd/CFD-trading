@@ -2,7 +2,7 @@ import AssetDetails from '@/src/components/AssetDetails'
 import LeverageSlider from '@/src/components/LeverageSlider'
 import ThemedText from '@/src/components/common/ThemedText'
 import { ThemeColor } from '@/src/theme/theme-color'
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
+import BottomSheet, { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import LeverageControls from './LeverageControls'
@@ -32,7 +32,7 @@ const TradingModal: React.FC<TradingModalProps> = ({
     setLeverage(1.0)
   }, [tradeType]);
 
-  const snapPoints = useMemo(() => ['85%'], [])
+  const snapPoints = useMemo(() => ["80%"], []);
 
   if (!isVisible) return null
 
@@ -65,14 +65,8 @@ const TradingModal: React.FC<TradingModalProps> = ({
       onClose={onClose}
       backgroundStyle={styles.background}
       handleIndicatorStyle={styles.indicator}
-      keyboardBehavior="extend"
-      keyboardBlurBehavior="restore"
     >
       <BottomSheetView style={styles.container}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoidingView}
-        >
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.header}>
               <ThemedText size="lg" style={styles.title}>
@@ -99,7 +93,7 @@ const TradingModal: React.FC<TradingModalProps> = ({
               <ThemedText variant="secondary" style={styles.sectionTitle}>
                 Margin <ThemedText size="sm" variant="tertiary">(in $)</ThemedText>
               </ThemedText>
-              <TextInput
+              <BottomSheetTextInput
                 style={styles.input}
                 value={margin}
                 onChangeText={setMargin}
@@ -142,7 +136,6 @@ const TradingModal: React.FC<TradingModalProps> = ({
               </TouchableOpacity>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
       </BottomSheetView>
     </BottomSheet>
   )
@@ -179,8 +172,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ThemeColor.border,
     borderRadius: 8,
-    padding: 12,
-    backgroundColor: ThemeColor.backgroundLight,
+    padding: 16,
+    backgroundColor: ThemeColor.card,
     color: ThemeColor.text.primary,
   },
   checkboxRow: {
