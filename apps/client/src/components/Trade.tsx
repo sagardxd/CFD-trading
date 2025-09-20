@@ -16,7 +16,7 @@ const Trade: React.FC<TradeProps> = ({ selectedAsset, data, onOpenModal }) => {
   }
 
   const handleSellOrder = () => {
-    onOpenModal(OrderType.BUY)
+    onOpenModal(OrderType.SELL)
   }
 
   return (
@@ -31,7 +31,7 @@ const Trade: React.FC<TradeProps> = ({ selectedAsset, data, onOpenModal }) => {
           <ThemedText style={styles.buyButtonText} size='button'>
             Long {selectedAsset.toString() || "Asset"}
           </ThemedText>
-          {data?.bidPrice && <ThemedText size='sm' style={styles.priceButtonText}>{(Number(data.bidPrice) / 10000).toFixed(3)}</ThemedText>}
+          {data?.bidPrice && <ThemedText size='sm' style={styles.priceButtonText}>{(Number(data.bidPrice) / Math.pow(10,data.decimal))}</ThemedText>}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -42,7 +42,7 @@ const Trade: React.FC<TradeProps> = ({ selectedAsset, data, onOpenModal }) => {
           <ThemedText style={styles.sellButtonText} size='button'>
             Short {selectedAsset.toString() || "Asset"}
           </ThemedText>
-          {data?.askPrice && <ThemedText size='sm' style={styles.priceButtonText}>{(Number(data.askPrice) / 10000).toFixed(3)}</ThemedText>}
+          {data?.askPrice && <ThemedText size='sm' style={styles.priceButtonText}>{Number(data.askPrice) / Math.pow(10,data.decimal)}</ThemedText>}
         </TouchableOpacity>
       </View>
     </View>

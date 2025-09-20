@@ -7,15 +7,17 @@ import ThemedText from './common/ThemedText';
 import AssetImage from './asset/AssetImage';
 
 interface AssetHeaderProps {
-  asset: AssetData;
+  asset: AssetData | null
 }
 
 const AssetHeader: React.FC<AssetHeaderProps> = ({ asset }) => {
-  const currentPrice = (asset.bidPrice + asset.askPrice) / 2;
+
+  if (!asset) return null
   
   const formatPrice = (price: number, decimals: number) => {
     return price / (Math.pow(10, decimals));
   };
+
 
   return (
     <View style={styles.container}>

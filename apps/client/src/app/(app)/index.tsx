@@ -10,7 +10,7 @@ import { useAssetStore } from '@/src/store/assets.store'
 const index = () => {
   const styles = homeStyles;
   const [isClient, setIsClient] = useState(false);
-  // const { assets, setAssets } = useAssetStore()
+  const { setAssets: SetAssetStore } = useAssetStore()
   const  [ assets, setAssets] = useState<AssetData[]>([])
 
   useEffect(() => {
@@ -29,8 +29,9 @@ const index = () => {
 
       socket.onmessage = (event) => {
         const response = JSON.parse(event.data) as WSData
-        console.log(response)
+        // console.log(response)
         setAssets(response.price_updates)
+        SetAssetStore(response.price_updates)
 
       }
       socket.onerror = (error) => {

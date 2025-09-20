@@ -3,7 +3,7 @@ import LeverageSlider from '@/src/components/LeverageSlider'
 import ThemedText from '@/src/components/common/ThemedText'
 import { ThemeColor } from '@/src/theme/theme-color'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 import LeverageControls from './LeverageControls'
 import { Asset, AssetData, OrderType, WSData } from '@repo/types'
@@ -27,12 +27,20 @@ const TradingModal: React.FC<TradingModalProps> = ({
   const [leverage, setLeverage] = useState(1.0)
   const bottomSheetRef = useRef<BottomSheet>(null)
 
+  useEffect(() => {
+    setMargin('');
+    setLeverage(1.0)
+  }, [tradeType]);
+
   const snapPoints = useMemo(() => ['85%'], [])
 
   if (!isVisible) return null
 
   const handleLeverageIncrement = () => {
-    setLeverage(prev => Math.min(Math.round(prev) + 10, 100))
+    setLeverage(prev => {
+      if (prev === 1) return 10;
+      return Math.min(Math.round(prev) + 10, 100)
+    })
   }
 
   const handleLeverageDecrement = () => {
@@ -40,9 +48,9 @@ const TradingModal: React.FC<TradingModalProps> = ({
   }
 
   const currentPrice = tradeType === OrderType.BUY && data
-    ? (Number(data.bidPrice) / 10000).toFixed(3)
+    ? (Number(data.bidPrice) / Math.pow(10 , data.decimal))
     : tradeType === OrderType.SELL && data?.askPrice
-    ? (Number(data.askPrice) / 10000).toFixed(3)
+    ? (Number(data.askPrice) / Math.pow(10 , data.decimal))
     : 'N/A'
 
   // Check if button should be disabled
@@ -76,7 +84,7 @@ const TradingModal: React.FC<TradingModalProps> = ({
               <ThemedText variant="secondary" style={styles.sectionTitle}>Asset Details</ThemedText>
               <AssetDetails
                 asset={selectedAsset} 
-                assetPrice={currentPrice}
+                assetPrice={currentPrice.toString()}
                 margin={margin}
                 leverage={leverage} 
               />

@@ -2,7 +2,7 @@ import { ThemeColor } from '@/src/theme/theme-color';
 import { AssetData, OrderType } from '@repo/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ThemedText from '../../components/common/ThemedText';
 import AssetChart from '@/src/components/chart/AssetChart';
@@ -10,9 +10,10 @@ import AssetHeader from '@/src/components/AssetHeader';
 import TradingModal from '@/src/components/TradingModal';
 import Trade from '@/src/components/Trade';
 import OrderHistory from '@/src/components/OrderHistory';
+import { useAssetStore } from '@/src/store/assets.store';
 
 const AssetDetails = () => {
-  const router = useRouter();
+  const styles = assetDetailsStyles;
   const { assetData } = useLocalSearchParams<{ assetData: string }>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [tradeType, setTradeType] = useState<OrderType>(OrderType.BUY);
@@ -20,7 +21,7 @@ const AssetDetails = () => {
   // Parse the asset data from the route params
   const asset: AssetData = assetData ? JSON.parse(assetData) : null;
 
-  const styles = assetDetailsStyles;
+  const assetDataFromStore = useAssetStore((state) => state.getAsset(asset.asset));
 
   if (!asset) {
     return (
@@ -41,11 +42,21 @@ const AssetDetails = () => {
     setIsModalVisible(false);
   };
 
+  if (!asset || !assetDataFromStore) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView />
+        <ThemedText size="lg" variant="error">Asset data not loaded yet</ThemedText>
+      </View>
+    );
+  }
+
+
   return (
     <View style={styles.container}>
       <SafeAreaView />
 
-      <AssetHeader asset={asset} />
+      <AssetHeader asset={assetDataFromStore} />
       <AssetChart asset={asset.asset} />
 
       <View style={styles.middleSection}>
@@ -55,7 +66,7 @@ const AssetDetails = () => {
       <View style={styles.bottomContainer}>
         <Trade
           selectedAsset={asset.asset}
-          data={null}
+          data={assetDataFromStore}
           onOpenModal={handleOpenModal}
         />
       </View>
@@ -63,10 +74,10 @@ const AssetDetails = () => {
       <TradingModal
         isVisible={isModalVisible}
         onClose={handleCloseModal}
+        data={assetDataFromStore}
         selectedAsset={asset.asset}
-        data={null}
         tradeType={tradeType}
-      /> 
+      />
     </View>
   );
 };
