@@ -13,16 +13,16 @@ const BalanceCard: React.FC<BalanceCardProps> = ({ balance, currency = 'USD' }) 
 
     return (
         <View style={styles.container}>
-            <ThemedText size="button" variant="secondary" style={styles.label}>
+            {/* <ThemedText size="button" variant="secondary" style={styles.label}>
                 Balance
-            </ThemedText>
+            </ThemedText> */}
             <View style={styles.balanceContainer}>
-                <ThemedText size="xl" variant="primary" style={styles.balance}>
+                <ThemedText size="lg" variant="primary" style={styles.balance}>
                     ${balance.toFixed(2)}
                 </ThemedText>
-                <ThemedText size="sm" variant="primary" style={styles.balance}>
+                {/* <ThemedText size="sm" variant="primary" style={styles.balance}>
                     {currency}
-                </ThemedText>
+                </ThemedText> */}
             </View>
         </View>
     );
@@ -30,15 +30,15 @@ const BalanceCard: React.FC<BalanceCardProps> = ({ balance, currency = 'USD' }) 
 
 const balanceStyles = StyleSheet.create({
     container: {
-        backgroundColor: ThemeColor.card,
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        marginHorizontal: 16,
-        marginVertical: 8,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: ThemeColor.border,
-        alignItems: 'center',
+        // backgroundColor: ThemeColor.card,
+        // paddingHorizontal: 20,
+        // paddingVertical: 16,
+        // marginHorizontal: 16,
+        // marginVertical: 8,
+        // borderRadius: 12,
+        // borderWidth: 1,
+        // borderColor: ThemeColor.border,
+        // alignItems: 'center',
     },
     balanceContainer: {
         flexDirection: 'row',

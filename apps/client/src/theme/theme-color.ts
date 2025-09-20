@@ -1,17 +1,19 @@
 export const ThemeColor = {
     // Core colors
-    primary: '#4ade80', // Subtle green for primary actions
-    background: '#1a1a1a', // Very dark background
-    backgroundLight: '#1E1F25', // Light background
-    card: '#1f1f1f', // Card/component background
-    
+    primary: '#4ade80',
+    background: '#1a1a1a', 
+    backgroundLight: '#1E1F25', 
+    card: '#1f1f1f', 
+
     text: {
         primary: '#f8fafc',
         secondary: '#94a3b8',
         tertiary: '#64748b',
     },
     // Accent colors
-    success: '#22c55e', // Subtle green for success/positive
-    error: '#ef4444', // Subtle red for errors/negative
-    border: '#2d2d2d', // Subtle border color
+    success: '#22c55e', 
+    error: '#ef4444',
+    border: '#2d2d2d', 
+    marginHorizontal: 20,
+    paddingHorizontal: 20
 }

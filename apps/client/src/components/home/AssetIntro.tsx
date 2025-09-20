@@ -119,13 +119,12 @@ const AssetStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    marginHorizontal: 16,
+    marginHorizontal: ThemeColor.marginHorizontal,
     marginVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: ThemeColor.border,
   },
-
   leftSection: {
     flex: 1,
     marginRight: 16,
