@@ -10,7 +10,7 @@ import { useNavigation, useRouter } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const index = () => {
+const Home = () => {
     const router = useRouter();
     const navigation = useNavigation();
     const styles = homeStyles;
@@ -127,4 +127,4 @@ const homeStyles = StyleSheet.create({
 
 })
 
-export default index
+export default Home

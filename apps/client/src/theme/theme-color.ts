@@ -11,8 +11,8 @@ export const ThemeColor = {
         tertiary: '#64748b',
     },
     // Accent colors
-    success: '#22c55e', 
-    error: '#ef4444',
+    success: '#16a34a', 
+    error: '#dc2626',
     border: '#2d2d2d', 
     marginHorizontal: 20,
     paddingHorizontal: 20

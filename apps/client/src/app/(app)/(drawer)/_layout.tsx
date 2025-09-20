@@ -26,16 +26,16 @@ export default function Layout() {
       }}
     >
       <Drawer.Screen
-        name="index" 
+        name="home" 
         options={{
           drawerLabel: 'Home',
           title: 'overview',
         }}
       />
        <Drawer.Screen
-        name="closed-orders" 
+        name="orders" 
         options={{
-          drawerLabel: 'Closed Orders',
+          drawerLabel: 'Orders',
           title: 'overview',
         }}
       />

@@ -11,6 +11,7 @@ import TradingModal from '@/src/components/TradingModal';
 import Trade from '@/src/components/Trade';
 import OrderHistory from '@/src/components/OrderHistory';
 import { useAssetStore } from '@/src/store/assets.store';
+import OpenOrders from '@/src/components/OpenOrders';
 
 const AssetDetails = () => {
   const styles = assetDetailsStyles;
@@ -60,7 +61,7 @@ const AssetDetails = () => {
       <AssetChart asset={asset.asset} />
 
       <View style={styles.middleSection}>
-        <OrderHistory />
+        <OpenOrders />
       </View>
 
       <View style={styles.bottomContainer}>

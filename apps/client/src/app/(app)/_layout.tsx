@@ -7,7 +7,6 @@ const AppLayout = () => {
             initialRouteName="(drawer)"
             screenOptions={{ headerShown: false, animation: 'ios_from_right', contentStyle: { backgroundColor: '#000' } }}>
             <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" />
             <Stack.Screen name="asset-details" />
         </Stack>
     )
