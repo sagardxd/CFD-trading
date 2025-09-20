@@ -5,6 +5,10 @@ export enum StreamName {
     DATABASE = 'database'
 }
 
+export enum ChannelName {
+    ASSET_PRICES = 'asset_prices'
+}
+
 export enum GroupName {
     EVENT_GROUP = 'event:group',
     ASSET_GROUP = 'asset:group',

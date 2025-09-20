@@ -1,4 +1,4 @@
-import { EventType, StreamName, type AssetData, type WSData } from '@repo/types';
+import { ChannelName, EventType, StreamName, type AssetData, type WSData } from '@repo/types';
 import {createRedis, config} from '@repo/config'
 
 const main = async () => {
@@ -7,11 +7,12 @@ const main = async () => {
         price_updates: []
     }
 
-    const redisClient = createRedis(config.REDIS_URL)
+    const redisClient = createRedis(config.REDIS_URL);
     await redisClient.connect();
 
     const backpackWS = new WebSocket("wss://ws.backpack.exchange/");
-    const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
+    // const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
+    const msg = { method: "SUBSCRIBE", params: ["bookTicker.SOL_USDC"], id: 1 }
 
     backpackWS.onopen = (() => {
         console.log('connected')
@@ -21,6 +22,7 @@ const main = async () => {
     backpackWS.onmessage = ((event: any) => {
         const response = JSON.parse(event.data);
         const data = response.data;
+        console.log(data)
 
         const parsed: AssetData = { 
             asset: data.s.replace("_USDC", ""),
@@ -40,13 +42,15 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
-                console.log(id)
+                // const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
+                // console.log(id)
+                // await redisClient.publish(ChannelName.ASSET_PRICES, assets)
+                // console.log(assets)
             }
         } catch (err) {
             console.error("Error while publishing:", err);
         }
-    }, 1000);
+    }, 100);
 
 }
 

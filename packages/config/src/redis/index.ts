@@ -1,6 +1,6 @@
 import { createClient, type RedisClientType } from "redis";
 import { logger } from "../logger";
-import type { ConsumerName, EngineResponse, EventType, GroupName, LatestAssetPayload, Payload, StreamName } from "@repo/types";
+import type { ChannelName, ConsumerName, EngineResponse, EventType, GroupName, LatestAssetPayload, Payload, StreamName, WSData } from "@repo/types";
 
 class RedisClient {
   private client: RedisClientType;
@@ -197,6 +197,35 @@ class RedisClient {
       logger.error('deleteGroup', 'Error deleting group', error);
     }
   }
+
+  async publish(channelName: ChannelName, data: WSData) {
+    try {
+      await this.client.publish(channelName, JSON.stringify(data));
+    } catch (error) {
+      logger.error('publish', `Error publising to channel: ${channelName}`, error);
+    }
+  }
+  async subscribe(channelName: ChannelName, callback: (message: any) => void) {
+    try {
+      const subClient = this.client.duplicate();
+  
+      await subClient.connect();
+  
+      await subClient.subscribe(channelName, (message) => {
+        try {
+          callback(JSON.parse(message));
+        } catch (err) {
+          logger.error("subscribe", `Error parsing message from ${channelName}`, err);
+        }
+      });
+  
+      logger.info(`Subscribed to channel: ${channelName}`);
+      return subClient; // return it so you can later unsubscribe or disconnect
+    } catch (error) {
+      logger.error("subscribe", `Error subscribing to channel: ${channelName}`, error);
+    }
+  }
+  
 
   async disconnect() {
     if (this.client.isOpen) this.client.disconnect();

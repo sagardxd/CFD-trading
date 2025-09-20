@@ -14,7 +14,7 @@ const AssetHeader: React.FC<AssetHeaderProps> = ({ asset }) => {
   const currentPrice = (asset.bidPrice + asset.askPrice) / 2;
   
   const formatPrice = (price: number, decimals: number) => {
-    return price.toFixed(decimals);
+    return price / (Math.pow(10, decimals));
   };
 
   return (

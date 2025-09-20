@@ -68,7 +68,7 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
               Bid:
             </ThemedText>
             <ThemedText size="md" variant="success" style={styles.priceValue}>
-              ${asset.bidPrice.toFixed(asset.decimal)}
+              ${asset.bidPrice / Math.pow(10, asset.decimal)}
             </ThemedText>
           </View>
 
@@ -77,7 +77,7 @@ const AssetIntro: React.FC<AssetIntroProps> = ({ asset }) => {
               Ask:
             </ThemedText>
             <ThemedText size="md" variant="error" style={styles.priceValue}>
-              ${asset.askPrice.toFixed(asset.decimal)}
+              ${asset.askPrice / Math.pow(10, asset.decimal)}
             </ThemedText>
           </View>
         </View>
