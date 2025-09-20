@@ -42,15 +42,15 @@ const main = async () => {
     setInterval(async () => {
         try {
             if (assets.price_updates.length > 0) {
-                // const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
-                // console.log(id)
-                // await redisClient.publish(ChannelName.ASSET_PRICES, assets)
+                const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
+                console.log(id)
+                await redisClient.publish(ChannelName.ASSET_PRICES, assets)
                 // console.log(assets)
             }
         } catch (err) {
             console.error("Error while publishing:", err);
         }
-    }, 100);
+    }, 1000);
 
 }
 
