@@ -1,6 +1,5 @@
 import { logger } from "@repo/config";
 import { prisma } from "../db/prisma-client"
-import { $ZodCheckGreaterThan } from "zod/v4/core";
 
 export const UserExists = async (email: string) => {
     try {
@@ -9,7 +8,6 @@ export const UserExists = async (email: string) => {
                 email
             }
         })
-        console.log("user", user);
         return user;
     } catch (error) {
         logger.error("UserExists", "Error in finding if the user exists!", error)
@@ -17,11 +15,12 @@ export const UserExists = async (email: string) => {
     }
 }
 
-export const CreateUser = async (email: string) => {
+export const CreateUser = async (email: string, password: string) => {
     try {
         const user = await prisma.user.create({
             data: {
                 email: email,
+                password: password
             }
         })
         logger.info(`User created: ${user}`)

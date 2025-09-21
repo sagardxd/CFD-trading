@@ -3,13 +3,13 @@ import BalanceCard from '@/src/components/home/BalanceCard'
 import { ThemeColor } from '@/src/theme/theme-color'
 import { AssetData, WSData } from '@repo/types'
 import React, { useEffect, useState } from 'react'
-import { Button, StyleSheet, View } from 'react-native'
+import {  StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAssetStore } from '@/src/store/assets.store'
 import { useNavigation, useRouter } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { successToast } from '@/src/utils/toast'
+import BiometricAuth from '@/src/components/auth/BiometricAuth'
 
 const Home = () => {
     const navigation = useNavigation();
@@ -67,6 +67,8 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <SafeAreaView />
+
+            <BiometricAuth/>
 
             <View style={styles.menuContainer}>
                 <Ionicons

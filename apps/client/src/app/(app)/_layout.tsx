@@ -2,6 +2,16 @@ import { Redirect, Stack } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 
 const AppLayout = () => {
+
+    const { user } = useAuth()
+
+    console.log('here')
+
+    if (!user) {
+        console.log("redirecting to auth");
+        return <Redirect href="/(auth)" />;
+      }
+
     return (
         <Stack
             initialRouteName="(drawer)"

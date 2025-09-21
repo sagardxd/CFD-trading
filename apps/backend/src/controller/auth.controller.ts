@@ -1,25 +1,27 @@
 import { type Request, type Response } from "express";
 import { ApiResponseTimedOut, ApiSuccessResponse, CustomApiResponse, EngineApiResponse, InvalidInputs, QueueError, ServerError } from "../utils/api-response";
 import { logger } from "@repo/config";
-import { EventType, userSchema } from "@repo/types";
+import { EventType, userSchema, type SigninResponse, type SignupReponse } from "@repo/types";
 import { CreateUser, UpdateLastloggedIn, UserExists } from "../services/user.service";
 import { jwtSign, jwtVerify } from "../utils/jwt";
-import { sendEmail } from "../services/mail.service";
 import { enginerRequest, enginerResponse } from "../utils/engine-helper";
+import { hashPass } from "../utils/hashPass";
 
 export const signUpController = async (req: Request, res: Response) => {
     try {
         const parsed = userSchema.safeParse(req.body);
-        if (!parsed.success) return InvalidInputs(res, 'Invalid email!');
+        if (!parsed.success) return InvalidInputs(res, 'Invalid Inputs');
 
         const alreadyUser = await UserExists(parsed.data.email);
         if (alreadyUser) return CustomApiResponse(res, 'User already exists!', 409);
 
-        const user = await CreateUser(parsed.data.email);
+        const hashedPass = await hashPass(parsed.data.password);
+        console.log('hadhed pass', hashedPass)
+
+        const user = await CreateUser(parsed.data.email, hashedPass);
         if (!user) return ServerError(res);
 
-        const token = jwtSign({ email: parsed.data.email, id: user.id }, "5m")
-        await sendEmail(parsed.data.email, token);
+        const token = jwtSign({ email: parsed.data.email, id: user.id }, "7d")
         console.log('token', token);
 
         const id = await enginerRequest(EventType.CREATE_USER, { userId: user.id })
@@ -28,6 +30,9 @@ export const signUpController = async (req: Request, res: Response) => {
         const response = await enginerResponse(id);
         if (!response) return ApiResponseTimedOut(res);
 
+        if (response.payload.success) {
+            return ApiSuccessResponse<SignupReponse>(res, {userId: user.id, token})
+        }
         return EngineApiResponse(res, response);
 
     } catch (error) {
@@ -44,11 +49,9 @@ export const signInController = async (req: Request, res: Response) => {
         const alreadyUser = await UserExists(parsed.data.email);
         if (!alreadyUser) return CustomApiResponse(res, 'User not found!', 404);
 
-        const token = jwtSign({ email: parsed.data.email, id: alreadyUser.id }, "5m")
-        console.log(token);
-        await sendEmail(parsed.data.email, token);
+        const token = jwtSign({ email: parsed.data.email, id: alreadyUser.id }, "7d")
 
-        return ApiSuccessResponse(res, null);
+        return ApiSuccessResponse<SigninResponse>(res, {token});
     } catch (error) {
         logger.error('signInController', '', error);
         return ServerError(res);

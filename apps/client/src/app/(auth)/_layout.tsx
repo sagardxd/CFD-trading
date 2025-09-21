@@ -5,7 +5,8 @@ const AuthLayout = () => {
     const { user } = useAuth();
 
     if (user) {
-        return <Redirect href={'/(app)'}/>
+        
+        return <Redirect href={'/(app)/(drawer)/home'}/>
     }
 
     return (

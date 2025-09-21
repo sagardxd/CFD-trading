@@ -11,3 +11,4 @@ export type GetUSDBalanceResponse = {
     usd: number 
 }
     
+// export type 

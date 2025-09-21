@@ -18,15 +18,16 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
-    const [user, setUser] = useState<User | null>({
-        email:"sagardxd5@gmail.com"
-    });
+    const [user, setUser] = useState<User | null>(
+        // {email:"sagardxd5@gmail.com"}
+        null
+);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchCurrentUser = async () => {
         try {
             // const userData = await getCurrentUser();
-            setUser({email: "sagardxd5@gmail.com"});
+            // setUser({email: "sagardxd5@gmail.com"});
         } catch (error) {
             console.log('Failed to fetch current user:', error);
             setUser(null);
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const login = async(user: User, token:string) => {
         setUser(user);
         await storeToken(token);
-        router.push("/(app)")
+        router.push("/(app)/(drawer)/home")
     }
 
     const logout = async() => {

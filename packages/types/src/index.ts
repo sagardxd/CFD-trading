@@ -1,4 +1,5 @@
 export * from './api/trade.types'
+export * from './api/user.types'
 
 export * from './model/asset.types'
 export * from './model/redis.types' 

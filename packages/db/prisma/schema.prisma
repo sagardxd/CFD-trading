@@ -1,8 +1,7 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "./src/generated/prisma"
+  output   = "../generated/prisma"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -22,6 +21,7 @@ enum Asset {
 model User {
   id String @id @default(uuid())
   email String
+  password String
   lastLoggedIn DateTime?
   existingTrades ExistingTrade[] 
 }

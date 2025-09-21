@@ -31,7 +31,7 @@ export const createTrade = async (req: Request, res: Response<ApiResponse<create
 
 export const closeTrade = async (req: Request, res: Response) => {
     try {
-        const userId = req.user!.id;
+        const userId = req.user!.id;    
         const { tradeId } = req.params;
 
         if (!tradeId) return InvalidInputs(res, "Trade Id is required");

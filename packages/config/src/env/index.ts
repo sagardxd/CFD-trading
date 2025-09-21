@@ -12,6 +12,7 @@ const envSchema = z.object({
     JWT_TOKEN_PASS: z.string(),
     FRONTEND_URL: z.string(),
     RESEND_KEY: z.string(),
+    HASH_SALT: z.string(),
 })
 
 const env = envSchema.parse(process.env);
@@ -23,7 +24,8 @@ export const config = {
     PORT_WS_SERVER: env.PORT_WS_SERVER,
     JWT_TOKEN_PASS: env.JWT_TOKEN_PASS,
     FRONTEND_URL: env.FRONTEND_URL,
-    RESEND_KEY: env.RESEND_KEY
+    RESEND_KEY: env.RESEND_KEY,
+    HASH_SALT: env.HASH_SALT
 
 }
 
