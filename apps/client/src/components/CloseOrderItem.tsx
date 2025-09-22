@@ -3,12 +3,16 @@ import { ThemeColor } from '@/src/theme/theme-color'
 import { closeTradeDB } from '@repo/types'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+import { useAssetStore } from '../store/assets.store'
 
 interface CloseOrderItemProps {
   order: closeTradeDB
 }
 
 const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
+
+  const asset = useAssetStore((state) => state.getAsset(order.asset));
+
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -49,15 +53,15 @@ const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
             {order.type.charAt(0).toUpperCase() + order.type.slice(1).toLowerCase()}
           </ThemedText>
           <ThemedText style={styles.orderDetails} size='sm'>
-            {order.quantity} lots at {order.openPrice.toLocaleString()}
+            {order.quantity} lots at {order.openPrice / Math.pow(10, asset!.decimal)}
           </ThemedText>
           <ThemedText style={styles.closePrice} size='sm'>
-            Closed at: {order.closePrice.toLocaleString()}
+            Closed at: {order.closePrice / Math.pow(10, asset!.decimal)}
           </ThemedText>
         </View>
         <View style={styles.additionalInfo}>
           <ThemedText style={styles.leverageInfo} size='sm'>
-            {order.leverage}x • ${order.margin.toFixed(0)}
+            {order.leverage}x • ${order.margin / Math.pow(10, asset!.decimal)}
           </ThemedText>
           <ThemedText style={styles.timestamp} size='sm'>
             {formatDate(order.createdAt)}

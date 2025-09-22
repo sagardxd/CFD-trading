@@ -4,6 +4,7 @@ import { OpenTrade, OpenTradeResponse, OrderType } from '@repo/types'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useAssetStore } from '../store/assets.store'
+import { BALANCE_DECIMAL } from '../constants/decimal.constant'
 
 interface OpenOrderItemProps {
   order: OpenTradeResponse
@@ -14,9 +15,12 @@ const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder }) =>
   
   const asset = useAssetStore((state) => state.getAsset(order.asset));
   const currentPrice = order.type === OrderType.BUY ? asset?.askPrice : asset?.bidPrice
+
+  if (!currentPrice) return null;
   
-  const priceDifference = currentPrice ? currentPrice - order.openPrice : 0
-  const profitLoss = priceDifference * order.quantity * (order.type === 'BUY' ? 1 : -1)
+  const profitLoss = (order.type === OrderType.BUY
+    ? (currentPrice - order.openPrice) * order.quantity
+    : (order.openPrice - currentPrice) * order.quantity) / Math.pow(10, BALANCE_DECIMAL)
 
   return (
     <View style={styles.orderItem}>
@@ -58,17 +62,17 @@ const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder }) =>
             {order.type.charAt(0).toUpperCase() + order.type.slice(1).toLowerCase()}
           </ThemedText>
           <ThemedText style={styles.orderDetails} size='sm'>
-            {order.quantity} lots at {order.openPrice.toLocaleString()}
+            {order.quantity} lots at {order.openPrice / Math.pow(10, asset!.decimal)}
           </ThemedText>
           {currentPrice && (
             <ThemedText style={styles.currentPrice} size='sm'>
-              Current: {currentPrice.toLocaleString()}
+              Current: {currentPrice / Math.pow(10, asset!.decimal)}
             </ThemedText>
           )}
         </View>
         <View style={styles.additionalInfo}>
           <ThemedText style={styles.leverageInfo} size='sm'>
-            {order.leverage}x • ${order.margin.toFixed(0)}
+            {order.leverage}x • ${order.margin / Math.pow(10, BALANCE_DECIMAL)}
           </ThemedText>
         </View>
       </View>
