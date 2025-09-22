@@ -1,0 +1,1 @@
+export const BALANCE_DECIMAL = 2;

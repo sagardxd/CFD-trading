@@ -62,11 +62,10 @@ const Home = () => {
         navigation.dispatch(DrawerActions.openDrawer)
     }
 
-
     return (
         <View style={styles.container}>
             <SafeAreaView />
-            <View style={styles.menuContainer}>
+            <View style={styles.menuContainer}> 
                 <Ionicons
                     name="menu"
                     size={28}
@@ -74,7 +73,7 @@ const Home = () => {
                     onPress={handleDrawerOpen}
                     style={styles.menuIcon}
                 />
-                <BalanceCard balance={1250.75} />
+                <BalanceCard />
             </View>
 
             <View style={styles.cardsContainer}>

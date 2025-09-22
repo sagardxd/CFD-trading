@@ -5,13 +5,13 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ThemedText from '../../components/common/ThemedText';
-import AssetChart from '@/src/components/chart/AssetChart';
 import AssetHeader from '@/src/components/AssetHeader';
 import TradingModal from '@/src/components/TradingModal';
 import Trade from '@/src/components/Trade';
 import { useAssetStore } from '@/src/store/assets.store';
 import OpenOrders from '@/src/components/OpenOrders';
 import ThemeHeaderBackButton from '@/src/components/common/ThemeHeaderBackButton';
+import AssetChart from '@/src/components/asset/AssetChart';
 
 const AssetDetails = () => {
   const styles = assetDetailsStyles;

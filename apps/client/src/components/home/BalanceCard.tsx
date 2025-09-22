@@ -1,55 +1,56 @@
 import { ThemeColor } from '@/src/theme/theme-color';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ThemedText from '../common/ThemedText';
+import { useBalance } from '@/src/hooks/useBalance';
+import { BALANCE_DECIMAL } from '@/src/constants/decimal.constant';
+import LoadingSpinner from '../LoadingSpinner';
 
-interface BalanceCardProps {
-    balance: number;
-    currency?: string;
-}
-
-const BalanceCard: React.FC<BalanceCardProps> = ({ balance, currency = 'USD' }) => {
+const BalanceCard = () => {
     const styles = balanceStyles;
+    const { data, isLoading } = useBalance();
+    const [balance, setBalance] = useState(0.00)
+
+    useEffect(() => {
+        const userBalance = data?.data?.usd;
+        if (userBalance) setBalance(userBalance);
+
+    }, [data]);
+
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <LoadingSpinner size='small' />
+            </View>
+        )
+    }
 
     return (
-        <View style={styles.container}>
-            {/* <ThemedText size="button" variant="secondary" style={styles.label}>
-                Balance
-            </ThemedText> */}
-            <View style={styles.balanceContainer}>
-                <ThemedText size="lg" variant="primary" style={styles.balance}>
-                    ${balance.toFixed(2)}
-                </ThemedText>
-                {/* <ThemedText size="sm" variant="primary" style={styles.balance}>
-                    {currency}
-                </ThemedText> */}
-            </View>
+        <View style={styles.balanceContainer}>
+            <ThemedText size="lg" variant="primary" >
+                ${(balance / Math.pow(10, BALANCE_DECIMAL)).toFixed(2)}
+            </ThemedText>
         </View>
     );
 };
 
 const balanceStyles = StyleSheet.create({
-    container: {
-        // backgroundColor: ThemeColor.card,
-        // paddingHorizontal: 20,
-        // paddingVertical: 16,
-        // marginHorizontal: 16,
-        // marginVertical: 8,
-        // borderRadius: 12,
-        // borderWidth: 1,
-        // borderColor: ThemeColor.border,
-        // alignItems: 'center',
-    },
     balanceContainer: {
+        flex: 1,
+        backgroundColor: ThemeColor.background,
         flexDirection: 'row',
-        alignItems: 'baseline',
-        gap: 4,
+        justifyContent: 'flex-end'
+    },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: ThemeColor.background,
+        alignItems: 'flex-end'
+
     },
     label: {
         marginBottom: 4,
     },
-    balance: {
-    },
+
 });
 
 export default BalanceCard;

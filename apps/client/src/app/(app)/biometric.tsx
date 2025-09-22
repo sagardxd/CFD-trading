@@ -35,7 +35,7 @@ const BiometricAuth = () => {
                 biometricsSecurityLevel: 'strong',
             })
 
-            if (result.success) router.push('/(app)/(drawer)/home')
+            if (result.success) router.replace('/(app)/(drawer)/home')
 
             if (!result.success) setMessage(result.warning || 'Authentication cancelled')
         } finally {
