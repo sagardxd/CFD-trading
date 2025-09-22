@@ -1,5 +1,5 @@
 import { EventType, OrderType, StreamName, type CloseTrade, type WSData } from "@repo/types";
-import { CloseTrades, OpenTrades } from "../store/engine.store"
+import { OpenTrades } from "../store/engine.store"
 import { engineResStream } from "../redis/redis";
 
 export const startLiquidationWorker = async (assets: WSData) => {
@@ -60,9 +60,6 @@ export const startLiquidationWorker = async (assets: WSData) => {
 
                     // Remove from open trades, add to closed trades
                     trades.splice(i, 1);
-                    const userClosed = CloseTrades.get(userId) || [];
-                    userClosed.push(closedTrade);
-                    CloseTrades.set(userId, userClosed);
 
                     console.log(`PnL: $${pnl.toFixed(2)}`);
 

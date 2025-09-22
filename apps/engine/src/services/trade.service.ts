@@ -1,9 +1,8 @@
-import { logger, Response } from "@repo/config"
+import { logger } from "@repo/config"
 import { EventType, OrderType, StreamName, type CloseTrade, type CloseTradePayload, type CloseTradeResponse, type CreateTradePayload, type CreateTradeResponse, type GetAllOpenTradesPayload, type GetAllOpenTradesResponse, type OpenTrade, type OpenTradeResponse, type WSData } from "@repo/types"
-import { engineReqStream, engineResStream } from "../redis/redis"
+import {  engineResStream } from "../redis/redis"
 import { generateId } from "../utils/generate-id"
-import { MARGIN_DECIMAL } from "../constants/decimal.constants"
-import { Balances, CloseTrades, OpenTrades } from "../store/engine.store"
+import { Balances, OpenTrades } from "../store/engine.store"
 import { engineErrorRes, engineSuccessRes } from "../utils/send-engine-response"
 
 export const createTrade = async (input: CreateTradePayload, assetData: WSData) => {
@@ -105,11 +104,6 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
         // Remove from open orders
         userOpenTrades.splice(orderIndex, 1);
         OpenTrades.set(input.payload.userId, userOpenTrades);
-
-        // Add to closed orders
-        const userClosedTrades = CloseTrades.get(input.payload.userId) || [];
-        userClosedTrades.push(closedTrade);
-        CloseTrades.set(input.payload.userId, userClosedTrades);
 
         // entry in db
         await engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, {order: closedTrade});
