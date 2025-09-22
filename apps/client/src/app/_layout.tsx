@@ -1,10 +1,13 @@
 import { AuthProvider } from '@/src/context/AuthContext';
 import { useFonts } from 'expo-font';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Slot, SplashScreen } from "expo-router";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
+
+  const queryClient = new QueryClient();
 
   const [loaded, error] = useFonts({
     'ManropeRegular': require('@/assets/fonts/manrope/Manrope-Regular.ttf'),
@@ -25,10 +28,12 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Slot />
-      </GestureHandlerRootView>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Slot />
+        </GestureHandlerRootView>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

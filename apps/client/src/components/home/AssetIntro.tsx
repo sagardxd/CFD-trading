@@ -1,4 +1,4 @@
-import { fetchBinanceKlines } from '@/src/services/api';
+import { fetchBinanceKlines } from '@/src/services/klines.service';
 import { ThemeColor } from '@/src/theme/theme-color';
 import { AssetData } from '@repo/types';
 import { useRouter } from 'expo-router';

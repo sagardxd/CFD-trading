@@ -35,7 +35,7 @@
     interval: string = '1m'
   ): Promise<CandleData[]> => {
     try {
-      const result = await apiCaller.get<CandleResponse>(`/candles/${symbol}?interval=${interval}`);
+      const result = await apiCaller.getFetch<CandleResponse>(`/candles/${symbol}?interval=${interval}`);
       
       if (result.success) {
         return result.data.map((candle) => ({

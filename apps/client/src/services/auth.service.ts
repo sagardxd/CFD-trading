@@ -1,40 +1,28 @@
+import { ApiResponse, AuthResponse, UserProfile } from "@repo/types";
 import apiCaller from "./api.service";
+import { ServerError } from "../utils/api-resonse";
+import { logger } from "./logger.service";
 
-interface AuthResponse {
-    token?: string;
-    message?: string;
-}
-
-interface UserMeResponse {
-    email: string;
-    message?: string;
-}
-
-export const signInUser = async(email: string, password: string, isSignIn: boolean) => {
+export const authService = async (email: string, password: string, isSignIn: boolean):Promise<ApiResponse<AuthResponse | null>> =>  {
     try {
-        const data: AuthResponse = await apiCaller.post<AuthResponse>(`/user/${isSignIn ? "signin" : "signup"}`, {
+        const route = isSignIn ? "signin" : "signup"
+        const response = await apiCaller.post<AuthResponse>(`/auth/${route}`, {
             email,
             password
         })
-
-        if (data.token) {
-            return data;
-        } else {
-            throw new Error(data.message || 'Sign in failed');
-        }
+        return response;
     } catch (error) {
-        throw error;
+        logger.error('authService', `error in user ${isSignIn ? "signin" : "signup"}`, error)
+        return ServerError();
     }
 }
 
-export const getCurrentUser = async (): Promise<UserMeResponse> => {
+export const getUserProfile = async():Promise<ApiResponse<UserProfile | null>> => {
     try {
-        const data: UserMeResponse = await apiCaller.get<UserMeResponse>('/user/me');
-        return data;
-    } catch (error: any) {
-        if (error.response?.status === 401) {
-            throw new Error('Unauthorized: Please log in again');
-        }
-        throw new Error(error.response?.data?.message || 'Failed to fetch user information');
+        const response = await apiCaller.get<UserProfile>(`/auth/me`)
+        return response;
+    } catch (error) {
+        logger.error('authService', `error in fetching user profile`, error)
+        return ServerError();
     }
 }

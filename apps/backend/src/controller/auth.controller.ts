@@ -1,11 +1,12 @@
 import { type Request, type Response } from "express";
 import { ApiResponseTimedOut, ApiSuccessResponse, CustomApiResponse, EngineApiResponse, InvalidInputs, QueueError, ServerError } from "../utils/api-response";
 import { logger } from "@repo/config";
-import { EventType, userSchema, type SigninResponse, type SignupReponse } from "@repo/types";
+import { EventType, userSchema, type AuthResponse, type UserProfile} from "@repo/types";
 import { CreateUser, UpdateLastloggedIn, UserExists } from "../services/user.service";
 import { jwtSign, jwtVerify } from "../utils/jwt";
 import { enginerRequest, enginerResponse } from "../utils/engine-helper";
-import { hashPass } from "../utils/hashPass";
+import { hashPass, isHashedPassMatch } from "../utils/hashPass";
+import { StatusCodes } from "http-status-codes";
 
 export const signUpController = async (req: Request, res: Response) => {
     try {
@@ -31,7 +32,7 @@ export const signUpController = async (req: Request, res: Response) => {
         if (!response) return ApiResponseTimedOut(res);
 
         if (response.payload.success) {
-            return ApiSuccessResponse<SignupReponse>(res, {userId: user.id, token})
+            return ApiSuccessResponse<AuthResponse>(res, {userId: user.id, token})
         }
         return EngineApiResponse(res, response);
 
@@ -48,30 +49,36 @@ export const signInController = async (req: Request, res: Response) => {
 
         const alreadyUser = await UserExists(parsed.data.email);
         if (!alreadyUser) return CustomApiResponse(res, 'User not found!', 404);
+        
+        const isMatch = await isHashedPassMatch(parsed.data.password ,alreadyUser.password)
+        console.log('is match', isMatch)
+
+        if (!isMatch) return CustomApiResponse(res, 'Wrong password', StatusCodes.FORBIDDEN)
+
+            console.log('ismatch', isMatch)
 
         const token = jwtSign({ email: parsed.data.email, id: alreadyUser.id }, "7d")
 
-        return ApiSuccessResponse<SigninResponse>(res, {token});
+        return ApiSuccessResponse<AuthResponse>(res, {token, userId: alreadyUser.id});
     } catch (error) {
         logger.error('signInController', '', error);
         return ServerError(res);
     }
 }
 
-export const signInWithTokenController = async (req: Request, res: Response) => {
-    const token = req.query.token as string
+export const getUserProfileController = async (req: Request, res: Response) => {
+    const user = req.user
     try {
-        if (!token) return CustomApiResponse(res, "No token provided", 403);
 
-        const decodedUser = jwtVerify(token);
-        const newToken = jwtSign({ email: decodedUser.email, id: decodedUser.id }, '7d');
-        await UpdateLastloggedIn(decodedUser.id)
+        if (!user) return CustomApiResponse(res, 'Failed to fetch user', StatusCodes.FORBIDDEN);
 
-        res.cookie('token', newToken);
+        return ApiSuccessResponse<UserProfile>(res, {
+            email: user.email,
+            id: user.id
+        })
 
-        return ApiSuccessResponse(res, { userId: decodedUser.id })
     } catch (error) {
-        logger.error('signInWithTokenController', '', error);
+        logger.error('getUserProfileController', 'error giving user profile data', error);
         return ServerError(res);
     }
 }

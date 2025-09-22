@@ -6,19 +6,19 @@ import balanceRouter from '../src/routes/balance.route'
 import supportedAssetRouter from '../src/routes/supported-asset.route'
 import { AuthMiddleware } from "./middleware/auth.middleware";
 import { ApiSuccessResponse } from "./utils/api-response";
-import cookieParser from "cookie-parser";
 import { RedisInit } from "./redis/redis-setup";
-
+import cors from 'cors'
 
 const app = express();
+
 app.use(express.json());
-app.use(cookieParser());
+app.use(cors());
 
 app.get('/', (req, res) => {
     return ApiSuccessResponse(res, "Backend is up");
 })
 
-app.use("/api/v1", AuthRouter)
+app.use("/api/v1/auth", AuthRouter)
 app.use("/api/v1/trade", AuthMiddleware, tradesRouter)
 app.use("/api/v1/balance", AuthMiddleware, balanceRouter)
 app.use("/api/v1/supportedAssets", supportedAssetRouter)

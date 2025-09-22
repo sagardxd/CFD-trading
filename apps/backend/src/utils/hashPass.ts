@@ -12,6 +12,9 @@ export const hashPass = async (pass: string) => {
 }
 
 export const isHashedPassMatch = async (pass: string, hashedPass: string): Promise<boolean> =>  {
+
+    console.log('pass', pass)
+    console.log('hashedPass', hashedPass)
     try {
         const isMatch = bcrypt.compare(pass, hashedPass);
         return isMatch

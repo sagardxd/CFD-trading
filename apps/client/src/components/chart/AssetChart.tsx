@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { LineChart } from "react-native-gifted-charts";
-import { fetchBinanceKlines } from '@/src/services/api';
+import { fetchBinanceKlines } from '@/src/services/klines.service';
 import { Asset } from '@repo/types';
 import { ThemeColor } from '@/src/theme/theme-color';
 

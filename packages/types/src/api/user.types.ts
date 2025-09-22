@@ -1,7 +1,9 @@
-type AuthResponse =  {
-    token: string
+export type AuthResponse =  {
+    token: string,
+    userId: string
 }
 
-export type SignupReponse = AuthResponse & {userId: string} 
-
-export type SigninResponse = AuthResponse;
+export type UserProfile = {
+    email: string,
+    id: string
+}

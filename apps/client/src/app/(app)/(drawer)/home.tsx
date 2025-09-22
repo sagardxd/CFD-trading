@@ -9,7 +9,6 @@ import { useAssetStore } from '@/src/store/assets.store'
 import { useNavigation, useRouter } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import BiometricAuth from '@/src/components/auth/BiometricAuth'
 
 const Home = () => {
     const navigation = useNavigation();
@@ -25,7 +24,7 @@ const Home = () => {
 
         try {
             // Use the same IP as your API service
-            socket = new WebSocket(`ws://192.168.1.237:8003`);
+            socket = new WebSocket(`ws://192.168.0.89:8003`);
             console.log('Attempting WebSocket connection...');
 
             socket.onopen = () => {
@@ -67,9 +66,6 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <SafeAreaView />
-
-            <BiometricAuth/>
-
             <View style={styles.menuContainer}>
                 <Ionicons
                     name="menu"

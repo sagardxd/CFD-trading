@@ -11,7 +11,7 @@ import Animated, {
 import { ChartGrid } from '@/src/components/ChartGrid';
 import { LoadingSpinner } from '@/src/components/LoadingSpinner';
 import { PriceLabels } from '@/src/components/PriceLabels';
-import { fetchCandleData } from '@/src/services/api';
+import { fetchCandleData } from '@/src/services/klines.service';
 import { CandleData, CandlestickChartProps } from '@/src/types/candlestick';
 import { calculatePriceRange, priceToY } from '@/src/utils/chartUtils';
 

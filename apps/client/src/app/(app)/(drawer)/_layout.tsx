@@ -1,11 +1,10 @@
 import { Drawer } from 'expo-router/drawer';
 import { ThemeColor } from '@/src/theme/theme-color';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import ThemedText from '@/src/components/common/ThemedText';
+import DrawerContent from '@/src/components/tabs/DrawerContent';
 
 export default function Layout() {
+
   return (
     <Drawer
       screenOptions={{
@@ -30,21 +29,7 @@ export default function Layout() {
           flex: 1,
         },
       }}
-      drawerContent={(props) => (
-        <View style={{ flex: 1, backgroundColor: ThemeColor.background }}>
-          <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-            <DrawerItemList {...props} />
-          </DrawerContentScrollView>
-          <View style={{ 
-            padding: 20, 
-            alignItems: 'center'
-          }}>
-            <ThemedText variant='secondary' size='sm'>
-              Version 1.0.0
-            </ThemedText>
-          </View>
-        </View>
-      )}
+      drawerContent={DrawerContent}
     >
       <Drawer.Screen
         name="home" 

@@ -12,7 +12,7 @@ const envSchema = z.object({
     JWT_TOKEN_PASS: z.string(),
     FRONTEND_URL: z.string(),
     RESEND_KEY: z.string(),
-    HASH_SALT: z.string(),
+    HASH_SALT: z.string().transform(Number),
 })
 
 const env = envSchema.parse(process.env);

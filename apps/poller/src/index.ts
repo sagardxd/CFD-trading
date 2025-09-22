@@ -45,7 +45,7 @@ const main = async () => {
                 const id = await redisClient.xAdd(StreamName.EVENTS, EventType.ASSET, assets);
                 console.log(id)
                 await redisClient.publish(ChannelName.ASSET_PRICES, assets)
-                // console.log(assets)
+                console.log(assets)
             }
         } catch (err) {
             console.error("Error while publishing:", err);
