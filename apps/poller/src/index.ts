@@ -11,8 +11,8 @@ const main = async () => {
     await redisClient.connect();
 
     const backpackWS = new WebSocket("wss://ws.backpack.exchange/");
-    // const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
-    const msg = { method: "SUBSCRIBE", params: ["bookTicker.SOL_USDC"], id: 1 }
+    const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
+    // const msg = { method: "SUBSCRIBE", params: ["bookTicker.SOL_USDC"], id: 1 }
 
     backpackWS.onopen = (() => {
         console.log('connected')

@@ -6,7 +6,8 @@ export const getAllExistingTrades = async(userId: string) => {
         const data = await prisma.existingTrade.findMany({
             where: {
                 userId: userId
-            }
+            },
+            orderBy: [{createdAt : "desc"}]
         })
         return data;
     } catch (error) {

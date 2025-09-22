@@ -34,6 +34,7 @@ export const useOpenTrades = () => {
     return useQuery({
         queryKey: [QueryKeys.OPEN_TRADES],
         queryFn: getAllOpenTradeService,
+        staleTime: 1000 * 60,
     })
 }
 
@@ -41,5 +42,6 @@ export const useCloseTrades = () => {
     return useQuery({
         queryKey: [QueryKeys.CLOSE_TRADES],
         queryFn: getAllCloseTradeService,
+        staleTime: 1000 * 60,
     })
 }

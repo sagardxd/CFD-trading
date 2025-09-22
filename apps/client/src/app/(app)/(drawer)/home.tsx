@@ -9,6 +9,7 @@ import { useAssetStore } from '@/src/store/assets.store'
 import { useNavigation, useRouter } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { logger } from '@/src/services/logger.service'
 
 const Home = () => {
     const navigation = useNavigation();
@@ -47,7 +48,7 @@ const Home = () => {
             }
 
         } catch (error) {
-            console.error('Error creating WebSocket:', error);
+            logger.error('home uef', 'Error creating WebSocket:', error);
         }
 
         // Cleanup function

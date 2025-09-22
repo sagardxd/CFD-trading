@@ -2,15 +2,16 @@ import ThemedText from '@/src/components/common/ThemedText'
 import OpenOrderItem from '@/src/components/OpenOrderItem'
 import CloseOrderItem from '@/src/components/CloseOrderItem'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { Asset,  closeTradeDB, OpenTradeResponse } from '@repo/types'
+import { closeTradeDB, OpenTradeResponse } from '@repo/types'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { OrderStatus } from '../types/order.types'
-import { useCloseTrades, useOpenTrades } from '../hooks/useTrade'
-import { useAssetStore } from '../store/assets.store'
+import { useCloseTrade, useCloseTrades, useOpenTrades } from '../hooks/useTrade'
+import { logger } from '../services/logger.service'
 
 const OrderHistory = () => {
+    const closeTrade = useCloseTrade();
     const { data: openTradesResponse } = useOpenTrades();
     const { data: closeTradesResponse } = useCloseTrades();
     const [selectedStatus, setSelectedStatus] = useState<OrderStatus>(OrderStatus.OPEN)
@@ -35,13 +36,16 @@ const OrderHistory = () => {
         setSelectedStatus(status)
     }
 
-    const handleCloseOrder = (orderId: string) => {
-        setOpenOrders((prev) => prev.filter((order) => order.orderId != orderId))
+    const handleCloseOrder = async(orderId: string) => {
+        try {
+            await closeTrade.mutateAsync(orderId)
+            setOpenOrders((prev) => prev.filter((order) => order.orderId != orderId))
+        } catch (error) {
+            logger.error("handleCloseOrder", "error closing order")
+        }
     }
-console.log(closedOrders)
     // Get orders based on selected status
     const filteredOrders = selectedStatus === 'open' ? openOrders : closedOrders
-    console.log(filteredOrders.length)
 
     return (
         <View style={styles.container}>

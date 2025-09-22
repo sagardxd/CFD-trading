@@ -7,7 +7,7 @@ import { useAssetStore } from '../store/assets.store'
 
 interface OpenOrderItemProps {
   order: OpenTradeResponse
-  onCloseOrder?: (orderId: string) => void
+  onCloseOrder: (orderId: string) => void
 }
 
 const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder }) => {

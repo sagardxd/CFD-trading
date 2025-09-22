@@ -13,7 +13,6 @@ export const saveSnapshot = async () => {
             openTrades: Array.from(OpenTrades.entries())
         }
         await fs.writeFile(SNAPSHOT_FILE, JSON.stringify(snapshot, null, 2), "utf-8");
-        logger.info("Saved snapshot")
     } catch (error) {
         logger.error('saveSnapshot', 'Error saving snapshot', error);
     }
@@ -29,8 +28,6 @@ export const loadSnapshot = async () => {
 
         snapshot.balance.forEach(([id, balance]) => Balances.set(id, balance));
         snapshot.openTrades.forEach(([id, openTrades]) => OpenTrades.set(id, openTrades));
-
-        logger.info("Snapshot loaded")
     } catch (error) {
         logger.error('saveSnapshot', 'Error saving snapshot', error);
     }

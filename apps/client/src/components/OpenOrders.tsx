@@ -5,6 +5,7 @@ import { Asset, OpenTrade, OpenTradeResponse } from '@repo/types'
 import React, { useEffect, useMemo, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { useOpenTrades, useCloseTrade } from '../hooks/useTrade'
+import { logger } from '../services/logger.service'
 
 const OpenOrders = () => {
     const { data } = useOpenTrades();
@@ -21,8 +22,9 @@ const OpenOrders = () => {
         try {
             await closeTrade.mutateAsync(orderId)
             setOpenOrders((prev) => prev.filter((order) => order.orderId !== orderId))
-        } catch (e) {
-            // optionally show a toast/log
+        } catch (error) {
+            logger.error("handleCloseOrder", "error closing order", error)
+            // TODO toast
         }
     }
 
