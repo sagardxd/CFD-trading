@@ -14,7 +14,7 @@ export const createUser = (input: CreateUserPayload) => {
     }
 }
 
-export const getUserUSDBalance = (input: GetUSDBalancePayload) => {
+export const getUserUSDBalance = async(input: GetUSDBalancePayload) => {
     try {
         const balance = Balances.get(input.payload.userId)?.usd;
         if (!balance) return engineErrorRes(input.id, 'User not found')

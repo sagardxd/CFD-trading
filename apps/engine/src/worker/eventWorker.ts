@@ -12,7 +12,6 @@ export const startEventWorker = async () => {
         const result = await engineReqStream.readGroup(StreamName.EVENTS, GroupName.EVENT_GROUP, ConsumerName.EVENT_CONSUMER);
         if (!result) continue;
 
-
         switch (result.type) {
             case EventType.CREATE_USER:
                 await createUser(result as CreateUserPayload);
@@ -21,7 +20,7 @@ export const startEventWorker = async () => {
                 await getUserUSDBalance(result as GetUSDBalancePayload);
                 break;
             case EventType.OPEN_TRADE:
-                createTrade(result as CreateTradePayload, assetData);
+                await createTrade(result as CreateTradePayload, assetData);
                 break;
             case EventType.CLOSE_TRADE:
                 await closeTrade(result as CloseTradePayload, assetData);

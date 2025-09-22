@@ -163,7 +163,6 @@ class RedisClient {
               await this.acknowledge(streamName, groupName, match.id);
               return match;
             }
-            // For non-matching ones → don’t ack, just leave them pending
           }
         }
       } catch (error) {

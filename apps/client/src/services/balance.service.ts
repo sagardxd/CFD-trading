@@ -1,13 +1,14 @@
-import { getBalanceResponse } from "../types/user.types";
+import { ApiResponse, GetUSDBalanceResponse } from "@repo/types";
 import apiCaller from "./api.service"
+import { ServerError } from "../utils/api-resonse";
+import { logger } from "./logger.service";
 
-export const getBalance = async() => {
+export const getBalance = async(): Promise<ApiResponse<GetUSDBalanceResponse | null>> => {
     try {
-        const result = await apiCaller.get<getBalanceResponse>("/user/balance");
-        if (result.usd_balance) {
-            return result.usd_balance
-        }
+        const result = await apiCaller.get<GetUSDBalanceResponse>("/user/balance");
+        return result;
     } catch (error) {
-        
+        logger.error("getBalance", 'Error getting user balance', error)
+        return ServerError();
     }
 }

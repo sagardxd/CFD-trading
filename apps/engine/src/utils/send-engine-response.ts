@@ -10,11 +10,12 @@ export const engineSuccessRes = async <T>(
         success: true,
         ...(data ? { data } : {}),
     });
-}
+}   
 export const engineErrorRes = async (
     requestId: string,
     message?: string,
 ) => {
+    await engineReqStream.acknowledge(StreamName.EVENTS, GroupName.EVENT_GROUP, requestId);
     return await engineResStream.xAddWithId(StreamName.ENGINE_RES, requestId, {
         success: false,
         ...(message ? { message } : {}),
