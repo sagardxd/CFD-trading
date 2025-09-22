@@ -14,7 +14,6 @@ const BalanceCard = () => {
     useEffect(() => {
         const userBalance = data?.data?.usd;
         if (userBalance) setBalance(userBalance);
-
     }, [data]);
 
     if (isLoading) {
