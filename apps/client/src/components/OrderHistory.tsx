@@ -9,6 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import { OrderStatus } from '../types/order.types'
 import { useCloseTrade, useCloseTrades, useOpenTrades } from '../hooks/useTrade'
 import { logger } from '../services/logger.service'
+import { errorToast, successToast } from '../utils/toast'
 
 const OrderHistory = () => {
     const closeTrade = useCloseTrade();
@@ -40,8 +41,10 @@ const OrderHistory = () => {
         try {
             await closeTrade.mutateAsync(orderId)
             setOpenOrders((prev) => prev.filter((order) => order.orderId != orderId))
+            successToast('Order closed successfully')
         } catch (error) {
-            logger.error("handleCloseOrder", "error closing order")
+            logger.error("handleCloseOrder", "error closing order", error)
+            errorToast('Error closing order')
         }
     }
     // Get orders based on selected status

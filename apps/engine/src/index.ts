@@ -3,7 +3,7 @@ import { RedisInit } from "./redis/redis";
 import { loadSnapshot, saveSnapshot } from "./snapshots/snapshot";
 import { logger } from "@repo/config";
 
-const main = async () => {
+const main =async () => {
     try {
         await loadSnapshot();
         await RedisInit();

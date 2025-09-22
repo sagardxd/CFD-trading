@@ -1,9 +1,18 @@
 import * as Burnt from "burnt";
 
-export const successToast = () => {
+
+export const successToast  = (title: string, message?: string) => {
     Burnt.toast({
-        title: "Burnt installed.",
+        title: title,
         preset: "done",
-        message: "See your downloads.",
+        message: message,
       });
+}
+
+export const errorToast = (title: string, message?: string) => {
+  Burnt.toast({
+      title: title,
+      preset: "error",
+      message: message,
+    });
 }
