@@ -25,12 +25,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchCurrentUser = async () => {
-
-        console.log('logging user fetch kra bro')
         try {
             const token = await getToken();
             if (!token) {
-                console.log('token not avail')
                 setIsLoading(false)
                 return;
             }
@@ -40,7 +37,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             if (response.success && response.data) {
                 setUser(response.data)
             }
-            console.log(response)
         } catch (error) {
             logger.error('fetchCurrentUser', 'Failed to fetch current user:', error);
             setUser(null);
@@ -57,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setUser(user);
             await storeToken(token);
-            router.replace('/(app)/biometric')
+            router.replace('/(app)/(drawer)/home')
         } catch (error) {
             logger.error('login', 'Error logging in auth context', error)
         }

@@ -3,10 +3,12 @@ import { useAuth } from '@/src/context/AuthContext'
 import { authService } from '@/src/services/auth.service'
 import { logger } from '@/src/services/logger.service'
 import { ThemeColor } from '@/src/theme/theme-color'
+import { useRouter } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 const AuthScreen = () => {
+    const router = useRouter();
     const { login } = useAuth();
     const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
     const [email, setEmail] = useState('')
@@ -44,7 +46,6 @@ const AuthScreen = () => {
                 login({ email: email, id: result.data.userId }, result.data.token)
             }
             else {
-                console.log("result", result)
                 if (result.message) setError(result.message)
                 setPassword('');
             }

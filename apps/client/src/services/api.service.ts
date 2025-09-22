@@ -43,7 +43,6 @@ const get = async <T>(url: string, config?: AxiosRequestConfig): Promise<ApiResp
 };
 
 const post = async <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<ApiResponse<T>> => {
-  console.log('url;', url)
   const response: AxiosResponse<ApiResponse<T>> = await api.post(url, data, config);
   return response.data;
 };

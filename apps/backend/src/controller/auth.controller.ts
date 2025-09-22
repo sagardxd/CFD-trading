@@ -17,13 +17,11 @@ export const signUpController = async (req: Request, res: Response) => {
         if (alreadyUser) return CustomApiResponse(res, 'User already exists!', 409);
 
         const hashedPass = await hashPass(parsed.data.password);
-        console.log('hadhed pass', hashedPass)
 
         const user = await CreateUser(parsed.data.email, hashedPass);
         if (!user) return ServerError(res);
 
         const token = jwtSign({ email: parsed.data.email, id: user.id }, "7d")
-        console.log('token', token);
 
         const id = await enginerRequest(EventType.CREATE_USER, { userId: user.id })
         if (!id) return QueueError(res);
@@ -51,11 +49,8 @@ export const signInController = async (req: Request, res: Response) => {
         if (!alreadyUser) return CustomApiResponse(res, 'User not found!', 404);
         
         const isMatch = await isHashedPassMatch(parsed.data.password ,alreadyUser.password)
-        console.log('is match', isMatch)
 
         if (!isMatch) return CustomApiResponse(res, 'Wrong password', StatusCodes.FORBIDDEN)
-
-            console.log('ismatch', isMatch)
 
         const token = jwtSign({ email: parsed.data.email, id: alreadyUser.id }, "7d")
 
