@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native'
 import { ThemeColor } from '@/src/theme/theme-color'
 import ThemedText from '@/src/components/common/ThemedText'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
+import { BALANCE_DECIMAL } from '@/src/constants/decimal.constant'
 
 interface TradingMarginProps {
   margin: string
@@ -26,7 +27,7 @@ const TradingMargin: React.FC<TradingMarginProps> = ({
           Margin <ThemedText size="sm" variant="tertiary">(in $)</ThemedText>
         </ThemedText>
         <ThemedText variant="secondary" style={styles.helperText}>
-          Available: ${availableBalance.toFixed(2)}
+          Available: ${(availableBalance / Math.pow(10, BALANCE_DECIMAL)).toFixed(2)}
         </ThemedText>
       </View>
       <BottomSheetTextInput

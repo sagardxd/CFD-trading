@@ -37,3 +37,18 @@ export type CloseTrade = {
     opened_at: Date
     closed_at: Date
 }
+
+export type closeTradeDB = {
+    asset: Asset;
+    type: OrderType;
+    margin: number;
+    leverage: number;
+    id: string;
+    closePrice: number;
+    openPrice: number;
+    quantity: number;
+    pnl: number;
+    liquidated: boolean;
+    userId: string;
+    createdAt: Date;
+}

@@ -1,8 +1,8 @@
-import { createTradeSchema, EventType, StreamName, type ApiResponse, type CloseTradeResponse, type CreateTradeResponse, type createTradeResponse, type getAllCloseTradeResponse, type getAllOpenTradeResponse } from '@repo/types';
+import { createTradeSchema, EventType, StreamName, type ApiResponse, type CloseTradeResponse, type CreateTradeResponse, type createTradeResponse, type getAllCloseTradeResponse, type getAllOpenTradeResponse, type GetAllOpenTradesResponse } from '@repo/types';
 import type { Request, Response } from 'express';
 import { ApiResponseTimedOut, ApiSuccessResponse, EngineApiResponse, InvalidInputs, ServerError } from '../utils/api-response';
 import { logger } from '@repo/config';
-import { enginerRequest, enginerResponse } from '../utils/engine-helper';
+import { enginerRequest, engineResponse } from '../utils/engine-helper';
 import { getAllExistingTrades } from '../services/trade.service';
 
 export const createTrade = async (req: Request, res: Response<ApiResponse<createTradeResponse>>) => {
@@ -18,7 +18,7 @@ export const createTrade = async (req: Request, res: Response<ApiResponse<create
         if (!id) return ServerError(res);
 
 
-        const response = await enginerResponse<CreateTradeResponse>(id);
+        const response = await engineResponse<CreateTradeResponse>(id);
         if (!response) return ApiResponseTimedOut(res);
 
         return EngineApiResponse(res, response);
@@ -39,7 +39,7 @@ export const closeTrade = async (req: Request, res: Response) => {
         const id = await enginerRequest(EventType.CLOSE_TRADE, { userId: userId, tradeId });
         if (!id) return ServerError(res);
 
-        const response = await enginerResponse<CloseTradeResponse>(id);
+        const response = await engineResponse<CloseTradeResponse>(id);
         if (!response) return ApiResponseTimedOut(res);
 
         return EngineApiResponse(res, response);
@@ -56,7 +56,7 @@ export const getAllOpenTrades = async (req: Request, res: Response<ApiResponse<g
         const id = await enginerRequest(EventType.ALL_OPEN_TRADE, { userId: userId });
         if (!id) return ServerError(res);
 
-        const response = await enginerResponse<CloseTradeResponse>(id);
+        const response = await engineResponse<GetAllOpenTradesResponse>(id);
         if (!response) return ApiResponseTimedOut(res);
 
         return EngineApiResponse(res, response);
@@ -67,12 +67,13 @@ export const getAllOpenTrades = async (req: Request, res: Response<ApiResponse<g
     }
 }
 
-export const getAllCloseTrades = async (req: Request, res: Response<ApiResponse<any>>) => {
+export const getAllCloseTrades = async (req: Request, res: Response<ApiResponse<getAllCloseTradeResponse>>) => {
     try {
         const userId = req.user!.id;
-
+console.log('userid', userId)
         const data = await getAllExistingTrades(userId);
-        return ApiSuccessResponse(res, {orders: data})
+        console.log(data)
+        return ApiSuccessResponse(res, {trades: data as any})
 
     } catch (error: any) {
         logger.error('getCloseTrades', 'error getting all close trades in controller', error);

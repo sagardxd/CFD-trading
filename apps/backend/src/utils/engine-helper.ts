@@ -14,7 +14,7 @@ export const enginerRequest = async (type: EventType, data: any) => {
     }
 }
 
-export const enginerResponse = async <T>(id: string) => {
+export const engineResponse = async <T>(id: string) => {
     try {
         const result = await engineResStream.readGroupWithMesageId<T>(StreamName.ENGINE_RES, GroupName.ENGINE_RES_GROUP, ConsumerName.ENGINE_RES_CONSUMER, id);
         return result;

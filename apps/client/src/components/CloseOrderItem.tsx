@@ -1,11 +1,11 @@
 import ThemedText from '@/src/components/common/ThemedText'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { CloseTrade } from '@repo/types'
+import { closeTradeDB } from '@repo/types'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 interface CloseOrderItemProps {
-  order: CloseTrade
+  order: closeTradeDB
 }
 
 const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
@@ -49,10 +49,10 @@ const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
             {order.type.charAt(0).toUpperCase() + order.type.slice(1).toLowerCase()}
           </ThemedText>
           <ThemedText style={styles.orderDetails} size='sm'>
-            {order.quantity} lots at {order.open_price.toLocaleString()}
+            {order.quantity} lots at {order.openPrice.toLocaleString()}
           </ThemedText>
           <ThemedText style={styles.closePrice} size='sm'>
-            Closed at: {order.close_price.toLocaleString()}
+            Closed at: {order.closePrice.toLocaleString()}
           </ThemedText>
         </View>
         <View style={styles.additionalInfo}>
@@ -60,7 +60,7 @@ const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
             {order.leverage}x • ${order.margin.toFixed(0)}
           </ThemedText>
           <ThemedText style={styles.timestamp} size='sm'>
-            {formatDate(order.closed_at)}
+            {formatDate(order.createdAt)}
           </ThemedText>
         </View>
       </View>

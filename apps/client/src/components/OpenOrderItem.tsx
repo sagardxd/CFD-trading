@@ -1,18 +1,21 @@
 import ThemedText from '@/src/components/common/ThemedText'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { OpenTrade } from '@repo/types'
+import { OpenTrade, OpenTradeResponse, OrderType } from '@repo/types'
 import React from 'react'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { useAssetStore } from '../store/assets.store'
 
 interface OpenOrderItemProps {
-  order: OpenTrade
+  order: OpenTradeResponse
   onCloseOrder?: (orderId: string) => void
-  currentPrice?: number
 }
 
-const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder, currentPrice }) => {
-  // Calculate profit/loss based on current price vs open price
-  const priceDifference = currentPrice ? currentPrice - order.open_price : 0
+const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder }) => {
+  
+  const asset = useAssetStore((state) => state.getAsset(order.asset));
+  const currentPrice = order.type === OrderType.BUY ? asset?.askPrice : asset?.bidPrice
+  
+  const priceDifference = currentPrice ? currentPrice - order.openPrice : 0
   const profitLoss = priceDifference * order.quantity * (order.type === 'BUY' ? 1 : -1)
 
   return (
@@ -37,7 +40,7 @@ const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder, curr
             {onCloseOrder && (
               <TouchableOpacity 
                 style={styles.closeButton}
-                onPress={() => onCloseOrder(order.id)}
+                onPress={() => onCloseOrder(order.orderId)}
               >
                 <ThemedText style={styles.closeButtonText} size='sm'>×</ThemedText>
               </TouchableOpacity>
@@ -55,7 +58,7 @@ const OpenOrderItem: React.FC<OpenOrderItemProps> = ({ order, onCloseOrder, curr
             {order.type.charAt(0).toUpperCase() + order.type.slice(1).toLowerCase()}
           </ThemedText>
           <ThemedText style={styles.orderDetails} size='sm'>
-            {order.quantity} lots at {order.open_price.toLocaleString()}
+            {order.quantity} lots at {order.openPrice.toLocaleString()}
           </ThemedText>
           {currentPrice && (
             <ThemedText style={styles.currentPrice} size='sm'>

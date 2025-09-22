@@ -4,8 +4,9 @@ import { ThemeColor } from '@/src/theme/theme-color'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import { Asset, AssetData, OrderType } from '@repo/types'
+import { Asset, AssetData, OrderType, CreateTradeInput } from '@repo/types'
 import { useBalance } from '@/src/hooks/useBalance'
+import { useCreateTrade } from '@/src/hooks/useTrade'
 import { BALANCE_DECIMAL } from '@/src/constants/decimal.constant'
 import TradingHeader from '@/src/components/trading/TradingHeader'
 import TradingMargin from '@/src/components/trading/TradingMargin'
@@ -28,6 +29,7 @@ const TradingModal: React.FC<TradingModalProps> = ({
 }) => {
 
   const { data: balanceResponse } = useBalance();
+  const createTrade = useCreateTrade();
   const [userBalance, setUserBalance] = useState(0)
   const [margin, setMargin] = useState('')
   const [leverage, setLeverage] = useState(1.0)
@@ -68,7 +70,25 @@ const TradingModal: React.FC<TradingModalProps> = ({
   const hasMargin = margin.trim().length > 0
   const exceedsBalance = (userBalance - parseFloat(margin) * Math.pow(10, BALANCE_DECIMAL)) < 0;
 
-  const isButtonDisabled = !hasMargin || exceedsBalance
+  const isButtonDisabled = !hasMargin || exceedsBalance || createTrade.isPending
+
+  const handleCreateTrade = async () => {
+    if (isButtonDisabled) return;
+
+    const tradeInput: CreateTradeInput = {
+      asset: selectedAsset,
+      type: tradeType,
+      margin: parseFloat(margin) * Math.pow(10, BALANCE_DECIMAL), // sending the value with adding 2 decimal
+      leverage: leverage,
+    };
+
+    try {
+      await createTrade.mutateAsync(tradeInput);
+      onClose(); 
+    } catch (error) {
+      console.error('Failed to create trade:', error);
+    }
+  };
 
   return (
     <BottomSheet
@@ -122,9 +142,13 @@ const TradingModal: React.FC<TradingModalProps> = ({
                 }
               ]}
               disabled={isButtonDisabled}
+              onPress={handleCreateTrade}
             >
               <ThemedText size="button" style={styles.actionButtonText}>
-                {tradeType === OrderType.BUY ? 'Long/Buy' : 'Short/Sell'} {selectedAsset?.replace("USDT", "")}
+                {createTrade.isPending 
+                  ? 'Creating...' 
+                  : `${tradeType === OrderType.BUY ? 'Long/Buy' : 'Short/Sell'} ${selectedAsset?.replace("USDT", "")}`
+                }
               </ThemedText>
             </TouchableOpacity>
           </View>

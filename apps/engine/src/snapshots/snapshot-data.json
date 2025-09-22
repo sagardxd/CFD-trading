@@ -3,9 +3,14 @@
     [
       "22ba31af-4f3b-4ac8-8073-cfdd68e2459c",
       {
-        "usd": 500000
+        "usd": 420000
       }
     ]
   ],
-  "openTrades": []
+  "openTrades": [
+    [
+      "22ba31af-4f3b-4ac8-8073-cfdd68e2459c",
+      []
+    ]
+  ]
 }

@@ -2,9 +2,9 @@ import { type Request, type Response } from "express";
 import { ApiResponseTimedOut, ApiSuccessResponse, CustomApiResponse, EngineApiResponse, InvalidInputs, QueueError, ServerError } from "../utils/api-response";
 import { logger } from "@repo/config";
 import { EventType, userSchema, type AuthResponse, type UserProfile} from "@repo/types";
-import { CreateUser, UpdateLastloggedIn, UserExists } from "../services/user.service";
-import { jwtSign, jwtVerify } from "../utils/jwt";
-import { enginerRequest, enginerResponse } from "../utils/engine-helper";
+import { CreateUser, UserExists } from "../services/user.service";
+import { jwtSign } from "../utils/jwt";
+import { enginerRequest, engineResponse } from "../utils/engine-helper";
 import { hashPass, isHashedPassMatch } from "../utils/hashPass";
 import { StatusCodes } from "http-status-codes";
 
@@ -26,7 +26,7 @@ export const signUpController = async (req: Request, res: Response) => {
         const id = await enginerRequest(EventType.CREATE_USER, { userId: user.id })
         if (!id) return QueueError(res);
 
-        const response = await enginerResponse(id);
+        const response = await engineResponse(id);
         if (!response) return ApiResponseTimedOut(res);
 
         if (response.payload.success) {

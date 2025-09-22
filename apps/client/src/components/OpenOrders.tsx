@@ -1,41 +1,29 @@
 import ThemedText from '@/src/components/common/ThemedText'
 import OpenOrderItem from '@/src/components/OpenOrderItem'
 import { ThemeColor } from '@/src/theme/theme-color'
-import { OpenTrade, Asset, OrderType } from '@repo/types'
-import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { Asset, OpenTrade, OpenTradeResponse } from '@repo/types'
+import React, { useEffect, useMemo, useState } from 'react'
+import { ScrollView, StyleSheet, View } from 'react-native'
+import { useOpenTrades, useCloseTrade } from '../hooks/useTrade'
 
 const OpenOrders = () => {
-    const [openOrders, setOpenOrders] = useState<OpenTrade[]>([
-        { 
-            id: '1', 
-            userId: 'user1',
-            type: OrderType.BUY, 
-            asset: Asset.BTC,
-            margin: 1000,
-            leverage: 1,
-            quantity: 0.08, 
-            liquidation_price: 95000,
-            open_price: 108770.16, 
-            opened_at: new Date('2024-01-15T10:30:00Z')
-        },
-        { 
-            id: '2', 
-            userId: 'user1',
-            type: OrderType.SELL, 
-            asset: Asset.ETH,
-            margin: 500,
-            leverage: 5,
-            quantity: 2.0, 
-            liquidation_price: 3200,
-            open_price: 2800, 
-            opened_at: new Date('2024-01-15T14:20:00Z')
-        },
-    ])
+    const { data } = useOpenTrades();
+    const closeTrade = useCloseTrade();
+    const [openOrders, setOpenOrders] = useState<OpenTradeResponse[]>([])
 
-    const handleCloseOrder = (orderId: string) => {
-        setOpenOrders((prev) => prev.filter((order) => order.id !== orderId))
+    useEffect(() => {
+        const orders = data?.data?.trades
+        if (orders && orders.length > 0) setOpenOrders(orders)
+    }, [data]);
+
+
+    const handleCloseOrder = async (orderId: string) => {
+        try {
+            await closeTrade.mutateAsync(orderId)
+            setOpenOrders((prev) => prev.filter((order) => order.orderId !== orderId))
+        } catch (e) {
+            // optionally show a toast/log
+        }
     }
 
     return (
@@ -48,14 +36,13 @@ const OpenOrders = () => {
 
             <ScrollView contentContainerStyle={styles.contentContainer}>
                 {openOrders.length > 0 ? (
-                    openOrders.map((order) => (
-                        <OpenOrderItem 
-                            key={order.id} 
-                            order={order} 
+                     openOrders.map((order) => (
+                        <OpenOrderItem
+                            key={order.orderId}
+                            order={order}
                             onCloseOrder={handleCloseOrder}
-                            currentPrice={order.asset === Asset.BTC ? 109000 : order.asset === Asset.ETH ? 2850 : 98}
                         />
-                    ))
+                     ))
                 ) : (
                     <ThemedText style={styles.emptyText} size='sm'>
                         No open orders

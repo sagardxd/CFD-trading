@@ -6,5 +6,6 @@ export const useBalance = () => {
     return useQuery({
         queryKey: [QueryKeys.USER_BALANCE],
         queryFn: getUserUsdBalance,
+        staleTime: 1000 * 60,
     });
 }

@@ -8,7 +8,6 @@ export const getAllExistingTrades = async(userId: string) => {
                 userId: userId
             }
         })
-
         return data;
     } catch (error) {
         logger.error('getAllExistingTrades', 'error getting all close trades from db', error)

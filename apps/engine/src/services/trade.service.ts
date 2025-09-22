@@ -33,7 +33,7 @@ export const createTrade = async (input: CreateTradePayload, assetData: WSData) 
             asset: input.payload.asset,
             margin: input.payload.margin,
             leverage: input.payload.leverage,
-            quantity: input.payload.type === OrderType.BUY ? ((margin * input.payload.leverage) / buyPrice) : ((margin * input.payload.leverage) / sellPrice),
+            quantity: input.payload.type === OrderType.BUY ? Number(((margin * input.payload.leverage) / buyPrice).toFixed(5)) : Number(((margin * input.payload.leverage) / sellPrice).toFixed(5)),
             open_price: input.payload.type === OrderType.BUY ? buyPrice : sellPrice,
             liquidation_price: input.payload.type === OrderType.BUY ? (buyPrice * (1 - 1 / input.payload.leverage)) : (sellPrice * (1 + 1 / input.payload.leverage)),
             opened_at: new Date(),

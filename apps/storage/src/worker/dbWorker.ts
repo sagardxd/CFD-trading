@@ -14,7 +14,7 @@ export const startDbWorker = async () => {
                     await saveCloseTrade(data as CloseTradeStorageResponse);
                     break;
                 default:
-                    console.warn("Unknown event type:", data.type);
+                    console.log("Unknown event type:", data.type);
             }
         }
     } catch (error) {
