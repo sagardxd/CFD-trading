@@ -6,7 +6,6 @@ import { logger } from "./logger.service";
 export const getUserUsdBalance = async(): Promise<ApiResponse<GetUSDBalanceResponse | null>> => {
     try {
         const result = await apiCaller.get<GetUSDBalanceResponse>("/balance/usd");
-        console.log('rsult', result)
         return result;
 
     } catch (error) {

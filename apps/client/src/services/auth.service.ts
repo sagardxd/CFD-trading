@@ -10,7 +10,6 @@ export const authService = async (email: string, password: string, isSignIn: boo
             email,
             password
         })
-        console.log(response)
         return response;
     } catch (error) {
         logger.error('authService', `error in user ${isSignIn ? "signin" : "signup"}`, error)

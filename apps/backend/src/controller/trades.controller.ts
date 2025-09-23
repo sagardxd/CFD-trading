@@ -71,7 +71,6 @@ export const getAllCloseTrades = async (req: Request, res: Response<ApiResponse<
     try {
         const userId = req.user!.id;
         const data = await getAllExistingTrades(userId);
-        console.log(data)
         return ApiSuccessResponse(res, {trades: data as any})
 
     } catch (error: any) {

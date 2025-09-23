@@ -2,8 +2,8 @@ import AssetList from '@/src/components/home/AssetList'
 import BalanceCard from '@/src/components/home/BalanceCard'
 import { ThemeColor } from '@/src/theme/theme-color'
 import { AssetData, WSData } from '@repo/types'
-import React, { useEffect, useState } from 'react'
-import {  StyleSheet, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import {  Animated, Easing, StyleSheet, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAssetStore } from '@/src/store/assets.store'
 import { useNavigation, useRouter } from 'expo-router'
@@ -17,6 +17,25 @@ const Home = () => {
     const [isClient, setIsClient] = useState(false);
     const { setAssets: SetAssetStore } = useAssetStore()
     const [assets, setAssets] = useState<AssetData[]>([])
+    const fadeAnim = useRef(new Animated.Value(0)).current
+    const translateY = useRef(new Animated.Value(20)).current
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 450,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+            }),
+            Animated.timing(translateY, {
+                toValue: 0,
+                duration: 450,
+                easing: Easing.out(Easing.cubic),
+                useNativeDriver: true,
+            })
+        ]).start()
+    }, [])
 
     useEffect(() => {
         if (isClient) return;
@@ -62,7 +81,7 @@ const Home = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <Animated.View style={[styles.container, { opacity: fadeAnim, transform: [{ translateY }] }]}>
             <SafeAreaView />
             <View style={styles.menuContainer}> 
                 <Ionicons
@@ -80,7 +99,7 @@ const Home = () => {
                     <AssetList assets={assets} />
                 }
             </View>
-        </View>
+        </Animated.View>
     )
 }
 

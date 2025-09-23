@@ -37,7 +37,6 @@ export const getAllOpenTradeService = async(): Promise<ApiResponse<GetAllOpenTra
 export const getAllCloseTradeService = async(): Promise<ApiResponse<getAllCloseTradeResponse | null>> => {
     try {
         const response = await apiCaller.get<getAllCloseTradeResponse>('/trade/close');
-        console.log('res', response)
         return response;
     } catch (error) {
         logger.error('getAllCloseTradeService', 'error getting all closed trade', error)

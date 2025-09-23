@@ -47,8 +47,6 @@ export const createTrade = async (input: CreateTradePayload, assetData: WSData) 
         userOpenTrades.push(order);
         OpenTrades.set(input.payload.userId, userOpenTrades);
 
-        console.log('trade created', order.id);
-
         return engineSuccessRes<CreateTradeResponse>(input.id, { orderId: order.id })
 
     } catch (error) {
@@ -84,12 +82,7 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
         const priceDiff = order.type === OrderType.BUY ? (closePrice - order.open_price) : (order.open_price - closePrice) 
         const pnlRaw = priceDiff * order.quantity;
 
-        console.log("priceDiff", priceDiff)
-        console.log("pnlRaw", pnlRaw)
-
         const pnl = Number(pnlRaw.toFixed(0));
-
-        console.log(`Calculated PnL: $${pnl}`);
 
         const closedTrade: CloseTrade = {
             id: order.id,
@@ -107,7 +100,6 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
         };
 
         const newBalance = userBalance + order.margin + pnl;
-        console.log('balace: ', userBalance, ' new balance: ', newBalance)
 
         // updating user balance 
         Balances.set(input.payload.userId, { usd: newBalance })

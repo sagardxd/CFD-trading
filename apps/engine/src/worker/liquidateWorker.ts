@@ -13,7 +13,6 @@ export const startLiquidationWorker = async (assets: WSData) => {
                 const asset = assets.price_updates.find((a) => a.asset === trade.asset);
 
                 if (!asset) {
-                    console.log(`No price update for asset ${trade.asset}, skipping trade ${trade.id}`);
                     continue;
                 }
 
@@ -29,12 +28,8 @@ export const startLiquidationWorker = async (assets: WSData) => {
 
 
                 if (shouldLiquidate) {
-                    console.log(`LIQUIDATED: ${trade.id} on ${asset.asset}`);
-
                     const openPrice = trade.open_price;
                     const closePrice = currentPrice
-
-                    console.log('closeprice: ', closePrice, ' openprice: ', openPrice);
 
                     const pnlRaw = trade.type === OrderType.BUY
                         ? (closePrice - openPrice) * trade.quantity
@@ -60,8 +55,6 @@ export const startLiquidationWorker = async (assets: WSData) => {
 
                     // Remove from open trades, add to closed trades
                     trades.splice(i, 1);
-
-                    console.log(`PnL: $${pnl.toFixed(2)}`);
 
                     // entry in db
                     await engineResStream.xAdd(StreamName.DATABASE, EventType.CLOSE_TRADE, { order: closedTrade });

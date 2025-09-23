@@ -43,9 +43,9 @@ const BiometricAuth = () => {
         logout();
     }
 
-    useEffect(() => {
-        handleBiometricAuth()
-    }, [])
+    // useEffect(() => {
+    //     handleBiometricAuth()
+    // }, [])
 
     return (
         <View style={styles.container}>
