@@ -25,8 +25,7 @@ const OrderHistory = () => {
 
         const closeOrders = closeTradesResponse?.data?.trades
         if (closeOrders && closeOrders.length > 0) setClosedOrders(closeOrders)
-    }, [openTradesResponse, openTradesResponse]);
-
+    }, [openTradesResponse, closeTradesResponse]);
 
     const statusOptions: { key: OrderStatus; label: string }[] = [
         { key: OrderStatus.OPEN, label: 'Open' },

@@ -9,9 +9,8 @@ import { useAuth } from '@/src/context/AuthContext'
 
 const BiometricAuth = () => {
     const router = useRouter();
-    const {logout} = useAuth();
+    const { logout } = useAuth();
     const [loading, setLoading] = useState<boolean>(false)
-    const [message, setMessage] = useState<string>('')
 
     const handleBiometricAuth = async () => {
         setLoading(true)
@@ -23,7 +22,6 @@ const BiometricAuth = () => {
             }
             const isEnrolled = await LocalAuthentication.isEnrolledAsync()
             if (!isEnrolled) {
-                setMessage('No biometric records found. Please enroll in device settings.')
                 handleLogout();
                 return
             }
@@ -36,15 +34,13 @@ const BiometricAuth = () => {
             })
 
             if (result.success) router.replace('/(app)/(drawer)/home')
-
-            if (!result.success) setMessage(result.warning || 'Authentication cancelled')
         } finally {
             setLoading(false)
         }
     }
 
-    const handleLogout = async() => {
-          logout();
+    const handleLogout = async () => {
+        logout();
     }
 
     useEffect(() => {
@@ -55,11 +51,7 @@ const BiometricAuth = () => {
         <View style={styles.container}>
             <View style={styles.card}>
                 <Ionicons name="finger-print-outline" size={88} color={ThemeColor.primary} />
-                <ThemedText size="xl" style={styles.title}>Biometric Authentication</ThemedText>
-                <ThemedText size="sm" style={styles.subtitle}>
-                    Use your fingerprint to sign in securely
-                </ThemedText>
-
+                <ThemedText size="xl" style={styles.title}>Unlock</ThemedText>
 
                 <TouchableOpacity style={styles.primaryButton} onPress={handleBiometricAuth} disabled={loading}>
                     {loading ? (
@@ -72,13 +64,9 @@ const BiometricAuth = () => {
                     )}
                 </TouchableOpacity>
 
-                    {!!message && (
-                        <ThemedText size="sm" variant='error' style={styles.message}>{message}</ThemedText>
-                    )}
-                    
-                    <TouchableOpacity style={styles.secondaryButton} onPress={handleLogout} >
-                        <ThemedText size="sm" variant='secondary'>Use password instead</ThemedText>
-                    </TouchableOpacity>
+                <TouchableOpacity style={styles.secondaryButton} onPress={handleLogout} >
+                    <ThemedText size="sm" variant='secondary'>Use password instead</ThemedText>
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -104,7 +92,6 @@ const styles = StyleSheet.create({
         maxWidth: 380,
     },
     title: {
-        marginTop: 8,
     },
     subtitle: {
         color: ThemeColor.text.secondary,
@@ -134,7 +121,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 16,
     },
-   
+
 })
 
 export default BiometricAuth

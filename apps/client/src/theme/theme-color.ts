@@ -1,9 +1,9 @@
 export const ThemeColor = {
     // Core colors
     primary: '#4ade80',
-    background: '#1a1a1a', 
-    backgroundLight: '#1E1F25', 
-    card: '#1f1f1f', 
+    background: '#111111', 
+    backgroundLight: '#22222', 
+    card: '#222222', 
 
     text: {
         primary: '#f8fafc',

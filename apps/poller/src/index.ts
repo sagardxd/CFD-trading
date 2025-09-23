@@ -11,8 +11,7 @@ const main = async () => {
     await redisClient.connect();
 
     const backpackWS = new WebSocket("wss://ws.backpack.exchange/");
-    const msg = { method: "SUBSCRIBE", params: ["bookTicker.BTC_USDC", "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
-    // const msg = { method: "SUBSCRIBE", params: ["bookTicker.SOL_USDC"], id: 1 }
+    const msg = { method: "SUBSCRIBE", params: [ "bookTicker.SOL_USDC", "bookTicker.ETH_USDC"], id: 1 }
 
     backpackWS.onopen = (() => {
         console.log('connected')
@@ -22,12 +21,12 @@ const main = async () => {
     backpackWS.onmessage = ((event: any) => {
         const response = JSON.parse(event.data);
         const data = response.data;
-        console.log(data)
+
 
         const parsed: AssetData = { 
             asset: data.s.replace("_USDC", ""),
-            askPrice: Math.round(Number(data.a) * Math.pow(10, data.a.split(".")[1].length)),
-            bidPrice: Math.round(Number(data.b) * Math.pow(10, data.a.split(".")[1].length)),
+            askPrice: (Number(data.a) * Math.pow(10, data.a.split(".")[1].length)),
+            bidPrice: (Number(data.b) * Math.pow(10, data.a.split(".")[1].length)),
             decimal: data.a.split(".")[1].length
         }
 
@@ -48,9 +47,9 @@ const main = async () => {
                 console.log(assets)
             }
         } catch (err) {
-            console.error("Error while publishing:", err);
+            console.log("Error while publishing:", err);
         }
-    }, 1000);
+    }, 500);
 
 }
 

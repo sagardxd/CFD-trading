@@ -22,8 +22,8 @@ export const createTrade = async (input: CreateTradePayload, assetData: WSData) 
 
         const orderId = generateId();
 
-        const buyPrice = asset.bidPrice;
-        const sellPrice = asset.askPrice;
+        const buyPrice = asset.askPrice;
+        const sellPrice = asset.bidPrice;
 
         const margin = input.payload.margin;
 
@@ -34,7 +34,7 @@ export const createTrade = async (input: CreateTradePayload, assetData: WSData) 
             asset: input.payload.asset,
             margin: input.payload.margin,
             leverage: input.payload.leverage,
-            quantity: input.payload.type === OrderType.BUY ? Number(((margin * input.payload.leverage) / buyPrice).toFixed(5)) : Number(((margin * input.payload.leverage) / sellPrice).toFixed(5)),
+            quantity: input.payload.type === OrderType.BUY ? parseFloat(((margin * input.payload.leverage) / buyPrice).toFixed(5)) : parseFloat(((margin * input.payload.leverage) / sellPrice).toFixed(5)),
             open_price: input.payload.type === OrderType.BUY ? buyPrice : sellPrice,
             liquidation_price: input.payload.type === OrderType.BUY ? (buyPrice * (1 - 1 / input.payload.leverage)) : (sellPrice * (1 + 1 / input.payload.leverage)),
             opened_at: new Date(),
@@ -76,20 +76,20 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
         const asset = assetData.price_updates.find((asset) => asset.asset === order.asset);
         if (!asset) return engineErrorRes(input.id, 'Asset not found!')
 
-        const buyPrice = asset.bidPrice;
-        const sellPrice = asset.askPrice;
+        const buyPrice = asset.askPrice;
+        const sellPrice = asset.bidPrice;
 
-        const closePrice = order.type === OrderType.BUY ? buyPrice : sellPrice;
+        const closePrice = order.type === OrderType.BUY ? sellPrice : buyPrice
 
-        const pnlRaw = order.type === OrderType.BUY
-            ? (closePrice - order.open_price) * order.quantity
-            : (order.open_price - closePrice) * order.quantity;
+        const priceDiff = order.type === OrderType.BUY ? (closePrice - order.open_price) : (order.open_price - closePrice) 
+        const pnlRaw = priceDiff * order.quantity;
 
-        const pnl = Number(pnlRaw.toFixed(2));
-        const newpnl = pnl * Math.pow(10, MARGIN_DECIMAL)
+        console.log("priceDiff", priceDiff)
+        console.log("pnlRaw", pnlRaw)
+
+        const pnl = Number(pnlRaw.toFixed(0));
 
         console.log(`Calculated PnL: $${pnl}`);
-        console.log(`mew PnL: $${newpnl}`);
 
         const closedTrade: CloseTrade = {
             id: order.id,
@@ -106,7 +106,7 @@ export const closeTrade = async (input: CloseTradePayload, assetData: WSData) =>
             closed_at: new Date()
         };
 
-        const newBalance = userBalance + order.margin + newpnl;
+        const newBalance = userBalance + order.margin + pnl;
         console.log('balace: ', userBalance, ' new balance: ', newBalance)
 
         // updating user balance 

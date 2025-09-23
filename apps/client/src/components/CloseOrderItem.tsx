@@ -4,6 +4,7 @@ import { closeTradeDB } from '@repo/types'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { useAssetStore } from '../store/assets.store'
+import { BALANCE_DECIMAL } from '../constants/decimal.constant'
 
 interface CloseOrderItemProps {
   order: closeTradeDB
@@ -12,6 +13,8 @@ interface CloseOrderItemProps {
 const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
 
   const asset = useAssetStore((state) => state.getAsset(order.asset));
+
+  if (!asset) return;
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -39,7 +42,7 @@ const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
             ]} 
             size='md'
           >
-            {(order.pnl || 0) >= 0 ? '+' : ''}{order.pnl.toFixed(2)} USD
+            {(order.pnl || 0) >= 0 ? '+' : ''}{(order.pnl / Math.pow(10, BALANCE_DECIMAL)).toFixed(2)} USD
           </ThemedText>
         </View>
         <View style={styles.bottomSection}>
@@ -56,7 +59,7 @@ const CloseOrderItem: React.FC<CloseOrderItemProps> = ({ order }) => {
             {order.quantity} lots at {order.openPrice / Math.pow(10, asset!.decimal)}
           </ThemedText>
           <ThemedText style={styles.closePrice} size='sm'>
-            Closed at: {order.closePrice / Math.pow(10, asset!.decimal)}
+            Closed at: {order.closePrice / Math.pow(10, asset?.decimal)}
           </ThemedText>
         </View>
         <View style={styles.additionalInfo}>
