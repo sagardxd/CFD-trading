@@ -62,7 +62,7 @@ export const getAllOpenTrades = async (req: Request, res: Response<ApiResponse<g
         return EngineApiResponse(res, response);
 
     } catch (error: any) {
-        logger.error('getOpenTrades', 'error getting all open trades in controller', error);
+        logger.error('getAllOpenTrades', 'error getting all open trades in controller', error);
         return ServerError(res);
     }
 }
@@ -70,13 +70,12 @@ export const getAllOpenTrades = async (req: Request, res: Response<ApiResponse<g
 export const getAllCloseTrades = async (req: Request, res: Response<ApiResponse<getAllCloseTradeResponse>>) => {
     try {
         const userId = req.user!.id;
-console.log('userid', userId)
         const data = await getAllExistingTrades(userId);
         console.log(data)
         return ApiSuccessResponse(res, {trades: data as any})
 
     } catch (error: any) {
-        logger.error('getCloseTrades', 'error getting all close trades in controller', error);
+        logger.error('getAllCloseTrades', 'error getting all close trades in controller', error);
         return ServerError(res);
     }
 }

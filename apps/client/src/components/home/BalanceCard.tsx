@@ -25,20 +25,23 @@ const BalanceCard = () => {
     }
 
     return (
-        <View style={styles.balanceContainer}>
-            <ThemedText size="lg" variant="primary" >
-                ${(balance / Math.pow(10, BALANCE_DECIMAL)).toFixed(2)}
-            </ThemedText>
-        </View>
+            <View style={styles.balanceContent}>
+                <ThemedText variant="primary" size='xl' style={styles.balanceText}>
+                    $ {(balance / Math.pow(10, BALANCE_DECIMAL)).toFixed(2)}
+                </ThemedText>
+            </View>
     );
 };
 
 const balanceStyles = StyleSheet.create({
-    balanceContainer: {
+    balanceContent: {
         flex: 1,
-        backgroundColor: ThemeColor.background,
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'flex-end'
+    },
+    balanceText: {
+        fontWeight: '700'
     },
     loadingContainer: {
         flex: 1,

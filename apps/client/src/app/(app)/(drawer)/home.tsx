@@ -24,27 +24,25 @@ const Home = () => {
         let socket: WebSocket | null = null;
 
         try {
-            // Use the same IP as your API service
             socket = new WebSocket(`ws://192.168.0.89:8003`);
-            console.log('Attempting WebSocket connection...');
+            logger.info('Attempting WebSocket connection...');
 
             socket.onopen = () => {
-                console.log('Connected to WebSocket backend');
+                logger.info('Connected to WebSocket backend');
             }
 
             socket.onmessage = (event) => {
                 const response = JSON.parse(event.data) as WSData
-                // console.log(response)
                 setAssets(response.price_updates)
                 SetAssetStore(response.price_updates)
 
             }
             socket.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                logger.error('WebSocket error', '', error);
             }
 
             socket.onclose = (event) => {
-                console.log('WebSocket connection closed:', event.code, event.reason);
+                logger.error('WebSocket connection closed:', (event.code).toString(), event.reason);
             }
 
         } catch (error) {
@@ -93,31 +91,23 @@ const homeStyles = StyleSheet.create({
     },
     menuContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
         marginHorizontal: ThemeColor.marginHorizontal,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
         marginTop: 10,
-        borderRadius: 12,
-        backgroundColor: ThemeColor.background,
+        borderRadius: 14,
+        backgroundColor: ThemeColor.card,
         borderWidth: 1,
-        borderColor: ThemeColor.text.secondary + '20', // 20% opacity
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 1,
+        borderColor: ThemeColor.border,
+        alignItems: 'center',
     },
     menuIcon: {
-        opacity: 0.8,
+        opacity: 0.9,
+        marginRight: 12,
     },
     cardsContainer: {
         marginTop: 20,
-        gap: 6
+        gap: 12
     },
     topSection: {
         flex: 0,
