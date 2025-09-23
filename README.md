@@ -1,6 +1,8 @@
-# Trading Monorepo (Turbo + Bun + Prisma)
+# Trading Monorepo
 
 A CDF trading application on turborepo
+
+https://github.com/user-attachments/assets/b1239a46-385b-4a16-bb09-d46957193b88
 
 ## Architecture ()
 
