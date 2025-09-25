@@ -4,7 +4,7 @@ A CDF trading application on turborepo
 
 https://github.com/user-attachments/assets/b1239a46-385b-4a16-bb09-d46957193b88
 
-## Architecture ()
+## Architecture
 
 - **apps/backend**: HTTP API (Express). Auth, balances, orders. Uses Prisma + Postgres and Redis.
 - **apps/ws-server**: WebSocket broadcaster for live price/order updates.
@@ -20,7 +20,7 @@ Turbo orchestrates everything, Bun runs scripts.
 
 ## Prerequisites
 
-- Bun installed s
+- Bun installed 
 - Postgres running (DATABASE_URL)
 - Redis running (REDIS_URL)
 
